@@ -15,5 +15,8 @@ int main(){
     for (double x = 1; x <= 10; ++x) {
     std::cout << "fgamma(" << x << ") = " << sfuns::fgamma(x) << '\n';
     }
+    for (double x = 1; x <= 10; ++x) {
+    std::cout << "lngamma(" << x << ") = " << sfuns::lngamma(x) << '\n';
+    }
     return 0;
 }

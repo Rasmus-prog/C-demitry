@@ -1,4 +1,4 @@
-CXXFLAFS = -Wall -Wextra -Werror -std=c++23 -o
+CXXFLAFS = -Wall -Wextra -Werror -std=c++23
 LINK.o = $(CXX) $(LDFLAGS)
 LDLIBS += -lstdc++ -lm
 

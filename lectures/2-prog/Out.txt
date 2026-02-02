@@ -1,0 +1,2 @@
+Hello from Hello
+fgamma(1) = 1

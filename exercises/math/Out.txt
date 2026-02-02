@@ -1,0 +1,14 @@
+sqrt(2) = 1.41421
+fifth root of 2 = 1.1487
+e^pi = 23.1407
+pi^e = 22.4592
+fgamma(1) = 1
+fgamma(2) = 1
+fgamma(3) = 2
+fgamma(4) = 6
+fgamma(5) = 24
+fgamma(6) = 120
+fgamma(7) = 720
+fgamma(8) = 5040
+fgamma(9) = 40320
+fgamma(10) = 362880

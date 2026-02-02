@@ -1,4 +1,4 @@
-CXXFLAFS = -Wall -Wextra -Werror -std=c++23
+CXXFLAGS = -Wall -Wextra -Werror -std=c++23
 LINK.o = $(CXX) $(LDFLAGS)
 LDLIBS += -lstdc++ -lm
 
@@ -10,13 +10,13 @@ main : main.o hello.o sfuns.o
 		$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o main
 
 main.o : hello.h sfuns.h main.cc
-		$(CXX) $(CXXFLAFS) -c main.cc -o main.o
+		$(CXX) $(CXXFLAGS) -c main.cc -o main.o
 
 hello.o : hello.h hello.cc
-		$(CXX) $(CXXFLAFS) -c hello.cc -o hello.o
+		$(CXX) $(CXXFLAGS) -c hello.cc -o hello.o
 
 sfuns.o : sfuns.h sfuns.cc
-		$(CXX) $(CXXFLAFS) -c sfuns.cc -o sfuns.o
+		$(CXX) $(CXXFLAGS) -c sfuns.cc -o sfuns.o
 
 
 .PHONEY:clean

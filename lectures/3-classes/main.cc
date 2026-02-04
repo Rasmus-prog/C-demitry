@@ -51,7 +51,7 @@ int main() {
     std::cout<<std::endl;
 
     std::cout<<"Now comes vec3 class"<<std::endl;
-    pp::vec3 p1{1,2,3};
+    pp::vec3 p1(1,2,3);
     p1.x = 6;
     std::cout<<"p1 = ("<<p1.x<<","<<p1.y<<","<<p1.z<<")"<<std::endl;
 

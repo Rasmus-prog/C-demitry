@@ -1,0 +1,59 @@
+u=(0.966741, 0.679394, 0.537911)
+v=(0.713043, 0.68721, 0.487486)
+
+Test: unary negation operator(-)
+-u = (-0.966741, -0.679394, -0.537911)
+t  = (-0.966741, -0.679394, -0.537911)
+using 1st approx for vecs
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (0.253698, -0.00781587, 0.0504249)
+t   = (0.253698, -0.00781587, 0.0504249)
+using 1st approx for vecs
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (1.67978, 1.3666, 1.0254)
+t   = (1.67978, 1.3666, 1.0254)
+using 1st approx for vecs
+test 'addition' passed
+
+Test: scalar multiplication operator(*)
+u*c = (0.424703, 0.298467, 0.236312)
+t   = (0.424703, 0.298467, 0.236312)
+using 1st approx for vecs
+test 'multiplication (u*c)' passed
+c*u = (0.424703, 0.298467, 0.236312)
+using 1st approx for vecs
+test 'multiplication (c*u)' passed
+
+Test: scalar division operator(/)
+u/1.21132 = (0.798086, 0.560869, 0.444069)
+t           = (0.798086, 0.560869, 0.444069)
+using 1st approx for vecs
+test 'division' passed
+
+Test: dot product operator(%)
+u % v = 1.41844
+dot   = 1.41844
+using 2nd approx for doubles
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (1.67978, 1.3666, 1.0254) (expected (1.67978, 1.3666, 1.0254))
+using 1st approx for vecs
+test '+=' passed
+u -= v: (0.253698, -0.00781587, 0.0504249) (expected (0.253698, -0.00781587, 0.0504249))
+using 1st approx for vecs
+test '-=' passed
+u *= 0.439314: (0.424703, 0.298467, 0.236312) (expected (0.424703, 0.298467, 0.236312))
+using 1st approx for vecs
+test '*=' passed
+u /= 1.21132: (0.798086, 0.560869, 0.444069) (expected (0.798086, 0.560869, 0.444069))
+using 1st approx for vecs
+test '/=' passed
+
+Test: print method
+Vector u: (0.966741, 0.679394, 0.537911)
+Vector v: (0.713043, 0.68721, 0.487486)

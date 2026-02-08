@@ -1,0 +1,24 @@
+Machine epsilon
+      float eps=1.19209e-07
+     double eps=2.22045e-16
+long double eps=1.0842e-19
+1.19209e-07
+2.22045e-16
+1.0842e-19
+2.22045e-16
+1.19209e-07
+Non-commutativity of addition
+a=1
+b=1
+a==b ? false
+a>1  ? false
+b>1  ? true
+       tiny=0.00000000000000011
+1+tiny+tiny=1.00000000000000000
+tiny+tiny+1=1.00000000000000022
+Comparing doubles: introduction
+d1==d2? false
+d1=0.79999999999999993
+d2=0.80000000000000004
+Comparing doubles: the task
+approx(d1, d2)? true

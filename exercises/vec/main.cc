@@ -12,8 +12,7 @@ int main(){
     vec v(dis(gen), dis(gen), dis(gen));
     
     std::cout << "u=" << u << "\n";
-    std::cout << "v=" << v << "\n";
-    std::cout << "\n";
+    std::cout << "v=" << v << "\n\n";
 
     vec t;
 

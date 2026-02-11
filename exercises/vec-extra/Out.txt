@@ -1,0 +1,204 @@
+
+========== TESTING WITH DOUBLE ==========
+
+u=(0.479881, 0.145328, 0.435722)
+v=(0.866275, 0.276335, 0.0895264)
+
+Test: unary negation operator(-)
+-u = (-0.479881, -0.145328, -0.435722)
+t  = (-0.479881, -0.145328, -0.435722)
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (-0.386394, -0.131007, 0.346196)
+t   = (-0.386394, -0.131007, 0.346196)
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (1.34616, 0.421663, 0.525248)
+t   = (1.34616, 0.421663, 0.525248)
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = 0.494877
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (1.34616, 0.421663, 0.525248) (expected (1.34616, 0.421663, 0.525248))
+test '+=' passed
+u -= v: (-0.386394, -0.131007, 0.346196) (expected (-0.386394, -0.131007, 0.346196))
+test '-=' passed
+
+Test: print method
+Vector u: (0.479881, 0.145328, 0.435722)
+Vector v: (0.866275, 0.276335, 0.0895264)
+
+========== TESTING WITH FLOAT ==========
+
+u=(0.744243, 0.110553, 0.023791)
+v=(0.948904, 0.651318, 0.764596)
+
+Test: unary negation operator(-)
+-u = (-0.744243, -0.110553, -0.023791)
+t  = (-0.744243, -0.110553, -0.023791)
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (-0.204661, -0.540765, -0.740805)
+t   = (-0.204661, -0.540765, -0.740805)
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (1.69315, 0.761871, 0.788386)
+t   = (1.69315, 0.761871, 0.788386)
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = 0.796411
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (1.69315, 0.761871, 0.788386) (expected (1.69315, 0.761871, 0.788386))
+test '+=' passed
+u -= v: (-0.204661, -0.540765, -0.740805) (expected (-0.204661, -0.540765, -0.740805))
+test '-=' passed
+
+Test: print method
+Vector u: (0.744243, 0.110553, 0.023791)
+Vector v: (0.948904, 0.651318, 0.764596)
+
+========== TESTING WITH COMPLEX<DOUBLE> ==========
+
+u=((0.26994,0.777783), (0.534295,0.243007), (0.326417,0.791271))
+v=((0.757884,0.929529), (0.840847,0.806679), (0.850003,0.232523))
+
+Test: unary negation operator(-)
+-u = ((-0.26994,-0.777783), (-0.534295,-0.243007), (-0.326417,-0.791271))
+t  = ((-0.26994,-0.777783), (-0.534295,-0.243007), (-0.326417,-0.791271))
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = ((-0.487944,-0.151746), (-0.306552,-0.563672), (-0.523586,0.558748))
+t   = ((-0.487944,-0.151746), (-0.306552,-0.563672), (-0.523586,0.558748))
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = ((1.02782,1.70731), (1.37514,1.04969), (1.17642,1.02379))
+t   = ((1.02782,1.70731), (1.37514,1.04969), (1.17642,1.02379))
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = (-0.171691,2.22421)
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: ((1.02782,1.70731), (1.37514,1.04969), (1.17642,1.02379)) (expected ((1.02782,1.70731), (1.37514,1.04969), (1.17642,1.02379)))
+test '+=' passed
+u -= v: ((-0.487944,-0.151746), (-0.306552,-0.563672), (-0.523586,0.558748)) (expected ((-0.487944,-0.151746), (-0.306552,-0.563672), (-0.523586,0.558748)))
+test '-=' passed
+
+Test: print method
+Vector u: ((0.26994,0.777783), (0.534295,0.243007), (0.326417,0.791271))
+Vector v: ((0.757884,0.929529), (0.840847,0.806679), (0.850003,0.232523))
+
+========== TESTING WITH INT ==========
+
+u=(6, 8, 5)
+v=(3, 1, 4)
+
+Test: unary negation operator(-)
+-u = (-6, -8, -5)
+t  = (-6, -8, -5)
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (3, 7, 1)
+t   = (3, 7, 1)
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (9, 9, 9)
+t   = (9, 9, 9)
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = 46
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (9, 9, 9) (expected (9, 9, 9))
+test '+=' passed
+u -= v: (3, 7, 1) (expected (3, 7, 1))
+test '-=' passed
+
+Test: print method
+Vector u: (6, 8, 5)
+Vector v: (3, 1, 4)
+
+========== TESTING WITH LONG ==========
+
+u=(5, 8, 8)
+v=(1, 8, 2)
+
+Test: unary negation operator(-)
+-u = (-5, -8, -8)
+t  = (-5, -8, -8)
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (4, 0, 6)
+t   = (4, 0, 6)
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (6, 16, 10)
+t   = (6, 16, 10)
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = 85
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (6, 16, 10) (expected (6, 16, 10))
+test '+=' passed
+u -= v: (4, 0, 6) (expected (4, 0, 6))
+test '-=' passed
+
+Test: print method
+Vector u: (5, 8, 8)
+Vector v: (1, 8, 2)
+
+========== TESTING WITH LONG DOUBLE ==========
+
+u=(0.0353224, 0.302437, 0.329254)
+v=(0.707105, 0.898866, 0.00136187)
+
+Test: unary negation operator(-)
+-u = (-0.0353224, -0.302437, -0.329254)
+t  = (-0.0353224, -0.302437, -0.329254)
+test 'unary negation' passed
+
+Test: binary subtraction operator(-)
+u-v = (-0.671782, -0.596429, 0.327893)
+t   = (-0.671782, -0.596429, 0.327893)
+test 'subtraction' passed
+
+Test: binary addition operator(+)
+u+v = (0.742427, 1.2013, 0.330616)
+t   = (0.742427, 1.2013, 0.330616)
+test 'addition' passed
+
+Test: dot product operator(%)
+u % v = 0.297276
+test 'dot product' passed
+
+Test: compound assignment operators
+u += v: (0.742427, 1.2013, 0.330616) (expected (0.742427, 1.2013, 0.330616))
+test '+=' passed
+u -= v: (-0.671782, -0.596429, 0.327893) (expected (-0.671782, -0.596429, 0.327893))
+test '-=' passed
+
+Test: print method
+Vector u: (0.0353224, 0.302437, 0.329254)
+Vector v: (0.707105, 0.898866, 0.00136187)

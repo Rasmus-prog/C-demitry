@@ -2,6 +2,11 @@ sqrt(2) = 1.41421
 fifth root of 2 = 1.1487
 e^pi = 23.1407
 pi^e = 22.4592
+log(I)=(0,1.5708)
+   I^I=(0.20788,0)
+   pi^I=(0.413292,0.910598)
+   e^I=(0.540302,0.841471)
+My gamma function
 fgamma(1) = 1
 fgamma(2) = 1
 fgamma(3) = 2
@@ -12,6 +17,18 @@ fgamma(7) = 720
 fgamma(8) = 5040
 fgamma(9) = 40320
 fgamma(10) = 362880
+Standard gamma function
+std::tgamma(1) = 1
+std::tgamma(2) = 1
+std::tgamma(3) = 2
+std::tgamma(4) = 6
+std::tgamma(5) = 24
+std::tgamma(6) = 120
+std::tgamma(7) = 720
+std::tgamma(8) = 5040
+std::tgamma(9) = 40320
+std::tgamma(10) = 362880
+My log gamma function
 lngamma(1) = -1.09351e-08
 lngamma(2) = -1.09351e-08
 lngamma(3) = 0.693147
@@ -22,3 +39,14 @@ lngamma(7) = 6.57925
 lngamma(8) = 8.52516
 lngamma(9) = 10.6046
 lngamma(10) = 12.8018
+Standard log gamma function
+std::lgamma(1) = 0
+std::lgamma(2) = 0
+std::lgamma(3) = 0.693147
+std::lgamma(4) = 1.79176
+std::lgamma(5) = 3.17805
+std::lgamma(6) = 4.78749
+std::lgamma(7) = 6.57925
+std::lgamma(8) = 8.52516
+std::lgamma(9) = 10.6046
+std::lgamma(10) = 12.8018

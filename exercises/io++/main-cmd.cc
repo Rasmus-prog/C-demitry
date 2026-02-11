@@ -13,5 +13,4 @@ for(auto n: numbers)
 	std::cout << n <<" "<< std::sin(n) <<" "<< std::cos(n) <<std::endl;
 exit(EXIT_SUCCESS);
 
-
 }

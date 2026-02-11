@@ -1,0 +1,16 @@
+echo: arg= 1
+echo: arg= 1.234
+echo: arg= Hello
+bar: datum= 1
+bar: datum= 1.234
+bar: datum= Hello
+square(2) = 4
+f(2) = 4
+eval(f,2) = 4
+eval(square,2) = 4
+cube(2) = 8
+g(2) = 8
+h() = 1
+q() = 1
+h() = 1
+q() = 2

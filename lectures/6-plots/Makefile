@@ -33,3 +33,7 @@ erf.data: main Makefile
 	./$< -xmin -2 -xmax 2 dx 0.5 > $@ 2>log.erf
 	echo "\n\n" >> $@
 	./$< -xmin 0 -xmax 10 dx 0.255 >> $@ 2>>log.erf
+
+.PHONY: clean
+clean:
+	rm -f test.txt erf.data fig1.svg fig2.png fig3.svg log.erf log.fig2.gnu main

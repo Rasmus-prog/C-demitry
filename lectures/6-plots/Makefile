@@ -5,7 +5,7 @@ all: fig1.svg fig2.png
 
 test.txt: erf.data Makefile
 	>$@
-	cat erf.data | while read a b c; do echo $$a $$b >> $@; done
+	cat erf.data | while read a b c; do echo $$a $$c >> $@; done
 
 fig2.png: erf.data Makefile
 	echo '\
@@ -19,6 +19,8 @@ fig2.png: erf.data Makefile
 	' | tee log.fig2.gnu | gnuplot 
 
 
+
+
 fig1.svg: fig1.gnu erf.data
 	gnuplot $<
 
@@ -30,4 +32,4 @@ erf.data: main Makefile
 
 .PHONY: clean
 clean:
-	rm -f fig1.svg erf.data log.erf main fig2.png log.fig2.gnu
+	rm -f fig1.svg erf.data log.erf main fig2.png log.fig2.gnu test.txt

@@ -1,0 +1,6 @@
+R upper triangular? yes
+Q^T Q approx I? yes
+Q*R approx A? yes
+Ax ~= b? yes
+det(A) = 0.0671355
+AB approx I? yes

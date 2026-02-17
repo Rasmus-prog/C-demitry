@@ -56,6 +56,11 @@ int main(int argc, char** argv){
 		int n1 = 6, m1 = 4; // tall matrix
 		pp::matrix A = randmat(n1, m1);
 		pp::QR qr = pp::QR::decomp(A);
+
+		std::cout << "A:\n"; A.print();
+		std::cout << "Q:\n"; qr.Q.print();
+		std::cout << "R:\n"; qr.R.print();
+
 		// check upper triangular R
 		bool upper = true;
 		for(int i=0;i<m1;i++) for(int j=0;j<i;j++)
@@ -64,10 +69,13 @@ int main(int argc, char** argv){
 
 		// check Q^T Q = I
 		pp::matrix QtQ = qr.Q.T() * qr.Q;
+		std::cout << "Q^T Q:\n"; QtQ.print();
 		std::cout << "Q^T Q approx I? " << (mat_approx(QtQ, eye(m1))?"yes":"no") << std::endl;
 
 		// check QR = A
 		pp::matrix QRprod = qr.Q * qr.R;
+		std::cout << "A:\n"; A.print();
+		std::cout << "Q*R:\n"; QRprod.print();
 		std::cout << "Q*R approx A? " << (mat_approx(QRprod, A)?"yes":"no") << std::endl;
 	}
 
@@ -79,6 +87,8 @@ int main(int argc, char** argv){
 		pp::QR qr = pp::QR::decomp(A);
 		pp::vector x = qr.solve(b);
 		pp::vector Ax = A * x;
+		std::cout << "Ax:\n"; Ax.print();
+		std::cout << "b:\n"; b.print();
 		std::cout << "Ax ~= b? " << (pp::approx(Ax, b)?"yes":"no") << std::endl;
 
 		// determinant and inverse (used later)
@@ -93,6 +103,7 @@ int main(int argc, char** argv){
 		pp::QR qr = pp::QR::decomp(A);
 		pp::matrix B = qr.inverse();
 		pp::matrix AB = A * B;
+		std::cout << "AB:\n"; AB.print();
 		std::cout << "AB approx I? " << (mat_approx(AB, eye(n3))?"yes":"no") << std::endl;
 	}
 

@@ -72,15 +72,12 @@ struct matrix {
 	vector& operator[](int i){return cols[i];}
 	const vector& operator[](int i) const {return cols[i];}
 	void resize(int n, int m);
-//	void resize(int n, int m);
 	void setid();
 	matrix transpose() const;
 	matrix T() const;
 	
 	double get (int i, int j) {return cols[j][i];}
 	void set(int i, int j, double value){cols[j][i] = value;}
-//	vector get_col(int j);
-//	void set_col(int j,vector& cj);
 
 	matrix& operator+=(const matrix&);
 	matrix& operator-=(const matrix&);

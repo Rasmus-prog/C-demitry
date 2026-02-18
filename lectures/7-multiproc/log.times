@@ -1,0 +1,13 @@
+\
+	set terminal svg background rgb "white";\
+	set output "times.svg";\
+	set xlabel "Threads";\
+	set ylabel "Time (seconds)";\
+	a = 1;\
+	b = 10;\
+	f(n) = a+b/n;\
+	fit f(x) "Out.times" using 1:2 via a,b;\
+	plot \
+		"Out.times" using 1:2 with linespoints title "Real Time", \
+		 f(x) with lines title "Fitted Curve 1/n"\
+	

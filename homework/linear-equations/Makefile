@@ -13,7 +13,7 @@ matrix.o:matrix.h
 # timing data for QR decomposition on NxN matrices
 out.times.data: main Makefile
 	> $@
-	for N in $(shell seq 0 10 200); do \
+	for N in $(shell seq 0 100 500); do \
 		/usr/bin/time --format "$$N %e" --output $@ --append \
 			./main -size:$$N 1>/dev/null 2>/dev/null; \
 	done

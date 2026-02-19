@@ -79,7 +79,7 @@ int main(int argc, char** argv){
 		std::cout << "Q*R approx A? " << (mat_approx(QRprod, A)?"yes":"no") << std::endl;
 	}
 
-	// --- solve test ------------------------------------------------------------
+	// - -- solve test ------------------------------------------------------------
 	{
 		int n2 = 5;
 		pp::matrix A = randmat(n2, n2);
@@ -106,6 +106,5 @@ int main(int argc, char** argv){
 		std::cout << "AB:\n"; AB.print();
 		std::cout << "AB approx I? " << (mat_approx(AB, eye(n3))?"yes":"no") << std::endl;
 	}
-
 	return 0;
 }

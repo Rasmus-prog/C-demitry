@@ -4,11 +4,14 @@ LDLIBS += -lstdc++ -lm
 
 
 all: qr_decomposition_runtime.svg Out.txt
-Out.txt:main ; ./$< > $@
-main:main.o matrix.o
-main.o:matrix.h
-matrix.o:matrix.h
+Out.txt: main
+	./main > $@
 
+main: main.o matrix.o
+
+main.o: matrix.h main.cc
+
+matrix.o: matrix.h matrix.cc
 
 # timing data for QR decomposition on NxN matrices
 out.times.data: main Makefile

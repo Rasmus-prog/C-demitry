@@ -27,6 +27,6 @@ qr_decomposition_runtime.svg: plot.gnu out.times.data
 
 
 
-.PHONEY : clean
+.PHONY : clean
 clean:
 	$(RM) [Oo]ut* main *.o qr_decomposition_runtime.svg fit.log

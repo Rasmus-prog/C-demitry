@@ -1,0 +1,9 @@
+Hydrogen s-wave radial equation solved on grid
+rmax=10.00000000, dr=0.30000000, npoints=32
+Lowest energies (numerical vs exact):
+n=1  E_num=-0.48922834  E_exact=-0.50000000  |err|=0.01077166
+n=2  E_num=-0.11112022  E_exact=-0.12500000  |err|=0.01387978
+n=3  E_num=0.09628386  E_exact=-0.05555556  |err|=0.15183942
+n=4  E_num=0.41175852  E_exact=-0.03125000  |err|=0.44300852
+n=5  E_num=0.82964943  E_exact=-0.02000000  |err|=0.84964943
+Wrote files: hydrogen_energies.txt, hydrogen_convergence_dr.txt, hydrogen_convergence_rmax.txt, hydrogen_wavefunctions.txt

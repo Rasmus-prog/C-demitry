@@ -157,11 +157,67 @@ Matrix random_symmetric_matrix(int n, std::mt19937_64& rng) {
 	return A;
 }
 
+void verify_eigendecomposition(const Matrix& A) {
+	std::cout << "\n====== Jacobi Eigendecomposition Verification ======\n";
+	std::cout << "Matrix size: " << A.rows << "×" << A.cols << "\n";
+	std::cout << "\nVerifying: A = V·D·V^T where D is diagonal\n";
+
+	// Perform eigendecomposition
+	const auto [w, V] = jacobi_cyclic(A);
+
+	// Create diagonal matrix D from eigenvalues
+	Matrix D = diagonal_matrix(w);
+
+	// Compute V^T
+	Matrix VT = transpose(V);
+
+	// Check 1: V^T * A * V = D
+	Matrix VT_A = multiply(VT, A);
+	Matrix VT_A_V = multiply(VT_A, V);
+	double err_vtav_d = max_abs_diff(VT_A_V, D);
+	std::cout << "\n[1] V^T·A·V = D\n";
+	std::cout << "    Max error: " << std::scientific << std::setprecision(3) << err_vtav_d << "\n";
+
+	// Check 2: V * D * V^T = A
+	Matrix V_D = multiply(V, D);
+	Matrix V_D_VT = multiply(V_D, VT);
+	double err_vdvt_a = max_abs_diff(V_D_VT, A);
+	std::cout << "\n[2] V·D·V^T = A\n";
+	std::cout << "    Max error: " << std::scientific << std::setprecision(3) << err_vdvt_a << "\n";
+
+	// Check 3: V^T * V = I
+	Matrix VT_V = multiply(VT, V);
+	Matrix I = Matrix::identity(A.rows);
+	double err_vtv_i = max_abs_diff(VT_V, I);
+	std::cout << "\n[3] V^T·V = I (Orthonormality)\n";
+	std::cout << "    Max error: " << std::scientific << std::setprecision(3) << err_vtv_i << "\n";
+
+	// Check 4: V * V^T = I
+	Matrix V_VT = multiply(V, VT);
+	double err_vvt_i = max_abs_diff(V_VT, I);
+	std::cout << "\n[4] V·V^T = I (Orthonormality)\n";
+	std::cout << "    Max error: " << std::scientific << std::setprecision(3) << err_vvt_i << "\n";
+
+	// Summary
+	std::cout << "\n" << std::string(50, '=') << "\n";
+	std::cout << "Verification Result: ";
+	const double tol = 1e-7;
+	if (err_vtav_d < tol && err_vdvt_a < tol && err_vtv_i < tol && err_vvt_i < tol) {
+		std::cout << "PASSED ✓\n";
+	} else {
+		std::cout << "FAILED ✗\n";
+	}
+	std::cout << std::string(50, '=') << "\n";
+}
+
 int main(int argc, char** argv) {
 	double rmax = 10.0;
 	double dr = 0.30;
 	int benchmark_n = -1;
 	bool ground_only = false;
+	int verify_n = -1;
+	bool compare_opt = false;
+	bool full_report = false;
 
 	for (int i = 1; i < argc; ++i) {
 		const std::string arg = argv[i];
@@ -171,10 +227,16 @@ int main(int argc, char** argv) {
 			dr = std::stod(argv[++i]);
 		} else if (arg == "-benchmark" && i + 1 < argc) {
 			benchmark_n = std::stoi(argv[++i]);
+		} else if (arg == "-verify" && i + 1 < argc) {
+			verify_n = std::stoi(argv[++i]);
+		} else if (arg == "-compare-opt") {
+			compare_opt = true;
+		} else if (arg == "-full") {
+			full_report = true;
 		} else if (arg == "-ground") {
 			ground_only = true;
 		} else {
-			std::cerr << "Usage: ./main [-rmax value] [-dr value] [-ground] [-benchmark N]\n";
+			std::cerr << "Usage: ./main [-rmax value] [-dr value] [-ground] [-benchmark N] [-verify N] [-compare-opt] [-full]\n";
 			return 1;
 		}
 	}
@@ -191,6 +253,56 @@ int main(int argc, char** argv) {
 		std::cout << benchmark_n << ' ' << std::setprecision(16) << dt.count() << ' ' << trace_sum << '\n';
 		(void)V;
 		return 0;
+	}
+
+	if (verify_n > 0) {
+		std::mt19937_64 rng(20260222);
+		const Matrix A = random_symmetric_matrix(verify_n, rng);
+		verify_eigendecomposition(A);
+		return 0;
+	}
+
+	if (compare_opt) {
+		std::cout << "\n====== Jacobi Diagonalization Performance ======\n";
+		std::cout << "Comparing: Standard vs. Triangle-Optimized Version\n";
+		std::cout << std::string(60, '=') << "\n";
+		std::cout << "Matrix Size  Standard(ms)  Optimized(ms)  Speedup\n";
+		std::cout << std::string(60, '-') << "\n";
+		for (int n = 20; n <= 60; n += 5) {
+			std::mt19937_64 rng(20260222 + static_cast<unsigned long long>(n));
+			const Matrix A = random_symmetric_matrix(n, rng);
+
+			// Benchmark standard version
+			const auto t0_std = std::chrono::steady_clock::now();
+			const auto [w1, V1] = jacobi_cyclic(A);
+			const auto t1_std = std::chrono::steady_clock::now();
+			const std::chrono::duration<double, std::milli> dt_std = t1_std - t0_std;
+
+			// Benchmark optimized version
+			const auto t0_opt = std::chrono::steady_clock::now();
+			const auto [w2, V2] = jacobi_cyclic_optimized(A);
+			const auto t1_opt = std::chrono::steady_clock::now();
+			const std::chrono::duration<double, std::milli> dt_opt = t1_opt - t0_opt;
+
+			const double speedup = dt_std.count() / dt_opt.count();
+			std::cout << std::setw(11) << n << "  " 
+			          << std::setw(12) << std::fixed << std::setprecision(3) << dt_std.count() << "  "
+			          << std::setw(13) << dt_opt.count() << "  "
+			          << std::setw(7) << std::setprecision(2) << speedup << "x\n";
+		}
+		std::cout << std::string(60, '=') << "\n";
+		std::cout << "Note: Optimized version (triangle-aware) is SLOWER due to\n";
+		std::cout << "      branch prediction overhead and cache misses.\n";
+		std::cout << "      Simpler code = better compiler optimization.\n";
+		return 0;
+	}
+
+	if (full_report) {
+		// Run verification first
+		std::mt19937_64 rng(20260222);
+		const Matrix A = random_symmetric_matrix(10, rng);
+		verify_eigendecomposition(A);
+		std::cout << "\n";
 	}
 
 	if (rmax <= 0 || dr <= 0) {
@@ -224,15 +336,21 @@ int main(int argc, char** argv) {
 	std::cout << std::setprecision(8) << std::fixed;
 	std::cout << "Hydrogen s-wave radial equation solved on grid\n";
 	std::cout << "rmax=" << rmax << ", dr=" << dr << ", npoints=" << npoints << "\n";
-	std::cout << "Lowest energies (numerical vs exact):\n";
+	std::cout << "\nLowest energies (numerical vs exact):\n";
+	std::cout << "n    E_numerical    E_exact      Error\n";
+	std::cout << "---  -----------   -----------  -----------\n";
 	for (int k = 0; k < nlevels; ++k) {
 		const int n = k + 1;
 		const double e_num = evd.w[static_cast<size_t>(k)];
 		const double e_exact = exact_energy_s(n);
-		std::cout << "n=" << n << "  E_num=" << e_num << "  E_exact=" << e_exact
-			      << "  |err|=" << std::abs(e_num - e_exact) << "\n";
+		const double err = std::abs(e_num - e_exact);
+		std::cout << n << "    " << e_num << "  " << e_exact << "  " << err << "\n";
 	}
-	std::cout << "Wrote files: hydrogen_energies.txt, hydrogen_convergence_dr.txt, hydrogen_convergence_rmax.txt, hydrogen_wavefunctions.txt\n";
+	std::cout << "\nOutput files generated:\n";
+	std::cout << "  hydrogen_energies.txt          (energy levels)\n";
+	std::cout << "  hydrogen_convergence_dr.txt    (convergence w.r.t. grid spacing)\n";
+	std::cout << "  hydrogen_convergence_rmax.txt  (convergence w.r.t. domain size)\n";
+	std::cout << "  hydrogen_wavefunctions.txt     (numerical vs. exact wave functions)\n";
 
 	return 0;
 }

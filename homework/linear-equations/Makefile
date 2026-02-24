@@ -4,6 +4,7 @@ LDLIBS += -lstdc++ -lm
 
 
 all: qr_decomposition_runtime.svg Out.txt
+
 Out.txt: main
 	./main > $@
 

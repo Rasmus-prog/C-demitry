@@ -11,3 +11,4 @@ def fib(n) :
 n=int(sys.argv[1])
 print(f"n={n}");
 for i in range(n+1) : print(f"fib({i})={fib(i)}");
+

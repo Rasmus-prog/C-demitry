@@ -16,7 +16,6 @@ bool mat_approx(const pp::matrix& A, const pp::matrix& B, double tol){
 	return true;
 }
 
-
 void matrix::resize(int n, int m){
 	cols.resize(m);
 	for(int i=0;i<m;++i)cols[i].resize(n);

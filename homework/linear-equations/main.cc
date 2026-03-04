@@ -28,13 +28,6 @@ pp::vector randvec(int n){
 	return v;
 }
 
-// check approximate equality between matrices
-bool mat_approx(const pp::matrix& A, const pp::matrix& B, double tol=1e-6){
-	if(A.size1()!=B.size1() || A.size2()!=B.size2()) return false;
-	for(int i=0;i<A.size1();i++) for(int j=0;j<A.size2();j++)
-		if(!pp::approx(A[i,j], B[i,j], tol, tol)) return false;
-	return true;
-}
 
 int main(int argc, char** argv){
 	std::srand(std::time(nullptr));
@@ -71,13 +64,13 @@ int main(int argc, char** argv){
 		// check Q^T Q = I
 		pp::matrix QtQ = qr.Q.T() * qr.Q;
 		std::cout << "Q^T Q:\n"; QtQ.print();
-		std::cout << "Q^T Q approx I? " << (mat_approx(QtQ, eye(m1))?"yes":"no") << std::endl;
+		std::cout << "Q^T Q approx I? " << (pp::mat_approx(QtQ, eye(m1))?"yes":"no") << std::endl;
 
 		// check QR = A
 		pp::matrix QRprod = qr.Q * qr.R;
 		std::cout << "A:\n"; A.print();
 		std::cout << "Q*R:\n"; QRprod.print();
-		std::cout << "Q*R approx A? " << (mat_approx(QRprod, A)?"yes":"no") << std::endl;
+		std::cout << "Q*R approx A? " << (pp::mat_approx(QRprod, A)?"yes":"no") << std::endl;
 	}
 
 	// - -- solve test ------------------------------------------------------------
@@ -105,7 +98,7 @@ int main(int argc, char** argv){
 		pp::matrix B = qr.inverse();
 		pp::matrix AB = A * B;
 		std::cout << "AB:\n"; AB.print();
-		std::cout << "AB approx I? " << (mat_approx(AB, eye(n3))?"yes":"no") << std::endl;
+		std::cout << "AB approx I? " << (pp::mat_approx(AB, eye(n3))?"yes":"no") << std::endl;
 	}
 	return 0;
 }

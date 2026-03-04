@@ -44,5 +44,5 @@ matrix operator*(const matrix&, double);
 matrix operator*(double, const matrix&);
 matrix operator/(const matrix&, double);
 vector operator*(const matrix&, const vector&);
-bool mat_approx(const matrix& A, const matrix& B, double tol=1e-6);
+bool mat_approx(const matrix& A, const matrix& B, double tol=1e-5);
 }

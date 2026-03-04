@@ -1,4 +1,5 @@
 #include"matrix.h"
+#include"qr.h"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

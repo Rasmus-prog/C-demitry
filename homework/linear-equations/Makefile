@@ -8,11 +8,15 @@ all: qr_decomposition_runtime.svg Out.txt
 Out.txt: main
 	./main > $@
 
-main: main.o matrix.o
+main: main.o vector.o matrix.o qr.o
 
-main.o: matrix.h main.cc
+main.o: vector.h matrix.h qr.h main.cc
 
-matrix.o: matrix.h matrix.cc
+vector.o: vector.h vector.cc
+
+matrix.o: vector.h matrix.h matrix.cc
+
+qr.o: vector.h matrix.h qr.h qr.cc
 
 # timing data for QR decomposition on NxN matrices
 out.times.data: main Makefile

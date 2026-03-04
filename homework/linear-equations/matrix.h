@@ -1,60 +1,8 @@
 #pragma once
 #include<string>
 #include<vector>
-#include<initializer_list>
-#include<functional>
-#include<cmath>
-#include<iostream>
+#include"vector.h"
 namespace pp{
-struct vector {
-	std::vector<double> data;
-	vector(int n) : data(n) {}
-	vector(std::initializer_list<double> list) :
-		data(list.begin(),list.end()) {}
-	vector()			=default;
-	vector(const vector&)		=default;
-	vector(vector&&)		=default;
-	vector& operator=(const vector&)=default;
-	vector& operator=(vector&&)	=default;
-	int size() const {return data.size();}
-	void resize(int n) {data.resize(n);}
-	double& operator[](int i) {return data[i];}
-	const double& operator[](int i) const {return data[i];}
-
-	vector& operator+=(const vector& other);
-
-	vector& operator-=(const vector& other);
-
-	vector& operator*=(double c);
-
-	vector& operator/=(double c);
-
-	// mutators also available in implementation
-	vector& add(double x);
-	vector& push_back(double x);
-
-	double norm() const;
-
-	void print(std::string s="") const;
-
-	vector map(std::function<double(double)> f) const;
-
-}; //vector
-
-// forward declaration of matrix so QR can refer to it
-
-// global vector operators - defined in matrix.cc
-vector operator+(const vector& a, const vector& b);
-vector operator-(const vector& a);
-vector operator-(const vector& a, const vector& b);
-vector operator*(const vector& a, double c);
-vector operator*(double c, const vector& a);
-vector operator/(const vector& a, double c);
-
-bool approx(double x, double y, double acc=1e-6, double eps=1e-6);
-
-bool approx(const vector& a, const vector& b, double acc=1e-6, double eps=1e-6);
-
 struct matrix {
 	std::vector<pp::vector> cols;
 	matrix()=default;
@@ -87,27 +35,6 @@ struct matrix {
 	matrix  operator^(int);
 
 	void print(std::string s="") const;
-};
-
-// QR decomposition helper class using modified Gram-Schmidt orthogonalization.
-// Provides methods to decompose a (tall) matrix A = Q*R, solve linear systems,
-// compute the determinant, and obtain the inverse for square matrices.
-struct QR {
-    matrix Q; // orthonormal columns (n x m)
-    matrix R; // upper triangular (m x m)
-
-    QR() = default;
-    explicit QR(const matrix& A);          // perform decomposition
-    static QR decomp(const matrix& A) { return QR(A); }
-
-    // Solve QR x = b (least-squares when n>=m). b must have size n.
-    vector solve(const vector& b) const;
-
-    // Determinant of the original matrix (must be square).
-    double det() const;
-
-    // Inverse of the original matrix (must be square and non-singular).
-    matrix inverse() const;
 };
 
 matrix operator+(const matrix&, const matrix&);

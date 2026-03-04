@@ -21,7 +21,7 @@ qr.o: vector.h matrix.h qr.h qr.cc
 # timing data for QR decomposition on NxN matrices
 out.times.data: main Makefile
 	> $@
-	for N in $(shell seq 0 100 500); do \
+	for N in $(shell seq 100 20 400); do \
 		/usr/bin/time --format "$$N %e" --output $@ --append \
 			./main -size:$$N 1>/dev/null 2>/dev/null; \
 	done

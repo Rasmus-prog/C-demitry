@@ -1,0 +1,60 @@
+(3 points) Hydrogen atom, s-wave radial Schrödinger equation on a grid
+
+Radial Schrödinger equation and boundary conditions
+
+    The s-wave (l=0) radial Schrödinger equation for the Hydrogen atom reads (in units "Bohr radius" for length and "Hartree" for energy),
+
+    -(1/2)f'' -(1/r)f = εf ,
+
+    where f(r) is the reduced radial wave-function, f(r)=r*Ψ(r); ε is the energy; and primes denote the derivative over r.
+
+    The bound s-wave wave-function satisfies the above equation and the two boundary conditions,
+
+    f(r → 0) = r-r² → 0, (prove this)
+
+    f(r → ∞) → 0 .
+
+    These two boundary conditions can only be satisfied for certain discrete (negative) values of the energy.
+
+    Since one cannot integrate numerically to ∞ one substitutes ∞ with a reasonably large number, rmax, such that it is much larger than the typical size of the hydrogen atom but still managable for the numerical inregrator (say, rmax = 10 Bohr radii for the ground state). The boundary conditions then become
+
+    f(0)=0 ,  f(rmax)=0 .
+
+Representation on a grid
+
+    Numerically one can represent the above problem on an equidistant grid with step Δr,
+    ri = i*Δr , i = 1...N , N = rmax/Δr - 1 ,
+
+    where the wave-function is represented by a vector {fi = f(ri)}i=1…N , and where the second derivative in the kinetic energy operator can be approximated using the three point finite difference formula,
+    f''i = (fi-1-2fi+fi+1)/Δr² .
+
+    With the grid representation the Schrödinger equation becomes a matrix eigenvalue equation,
+    ∑j=1..N-1 Hij fj = εfi , i=1...N ,
+
+    or, in matrix notation,
+
+
+    H f = ε f ,
+
+    where the Hamiltonian matrix H=K+W is given as a sum of the kinetic energy matrix K,
+
+                ( -2   1   0   0  ...  0  )
+                (  1  -2   1   0  ...  0  )
+                (  0   1  -2   1  ...  0  )
+    K = - 1/2Δr² ( ... ... ... ... ... ... )
+                (  0  ...  0   1  -2   1  )
+                (  0  ...  0   0   1  -2  )
+
+    and the potential energy matrix W,
+
+        ( -1/r1  0    0    0   ...     0  )
+        (   0  -1/r2  0    0   ...     0  )
+        (   0    0  -1/r3  0   ...     0  )
+    W = (  ...  ...  ...  ...  ...    ... )
+        (   0   ...   0    0  -1/rN-1   0  )
+        (   0   ...   0    0    0   -1/rN )
+
+    Notice that the boundary conditions f(0)=0, f(rmax)=0 are in-built in the K-matrix and the W-matrix: indeed the (omitted) components f0 and fN+1 are set to zero. Thus the matrix formulation naturally satisfies the zero-boundary conditions.
+
+    Solving the matrix eigenvalue equation amounts to matrix diagonalization. If you give the matrix H to your diagonalization routine it will return a vector e with the eigenvalues and a matrix V whith the corresponding eigenvectors as columns, such that
+    ∑j HijVjk = Vik ek .

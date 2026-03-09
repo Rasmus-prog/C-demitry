@@ -258,12 +258,26 @@ static int run_wavefunctions(double rmax, double dr, int requested_states) {
 	return 0;
 }
 
+static int run_timing(int size) {
+	if (size < 2) {
+		std::cerr << "Invalid matrix size for timing: use size >= 2\n";
+		return 1;
+	}
+	pp::matrix A = random_symmetric_matrix(size);
+	pp::EVD evd(A);
+	volatile double sink = evd.w[0];
+	(void)sink;
+	return 0;
+}
+
 int main(int argc, char** argv) {
 	double rmax = 10.0;
 	double dr = 0.3;
 	bool jacobi_selftest = false;
 	bool do_convergence = false;
 	bool do_wavefunctions = false;
+	bool do_timing = false;
+	int timing_size = 0;
 	double conv_fixed_rmax = 10.0;
 	double conv_fixed_dr = 0.1;
 	int wf_states = 3;
@@ -280,6 +294,12 @@ int main(int argc, char** argv) {
 			do_convergence = true;
 		} else if (arg == "--wavefunctions") {
 			do_wavefunctions = true;
+		} else if (arg == "--timing") {
+			do_timing = true;
+		} else if (arg == "-size" && i + 1 < argc) {
+			timing_size = std::stoi(argv[++i]);
+		} else if (arg.rfind("-size:", 0) == 0) {
+			timing_size = std::stoi(arg.substr(6));
 		} else if (arg == "--wf-states" && i + 1 < argc) {
 			wf_states = std::stoi(argv[++i]);
 		} else if (arg == "--conv-fixed-rmax" && i + 1 < argc) {
@@ -290,7 +310,8 @@ int main(int argc, char** argv) {
 			std::cerr << "Unknown or incomplete option: " << arg << "\n";
 			std::cerr << "Usage: ./main -rmax <value> -dr <value> [--jacobi-test] [--convergence]"
 			          << " [--conv-fixed-rmax <value>] [--conv-fixed-dr <value>]"
-			          << " [--wavefunctions] [--wf-states <int>]\n";
+			          << " [--wavefunctions] [--wf-states <int>]"
+			          << " [--timing -size <int>]\n";
 			return 1;
 		}
 	}
@@ -298,6 +319,7 @@ int main(int argc, char** argv) {
 	if (jacobi_selftest) return run_jacobi_selftest();
 	if (do_convergence) return run_convergence(conv_fixed_rmax, conv_fixed_dr);
 	if (do_wavefunctions) return run_wavefunctions(rmax, dr, wf_states);
+	if (do_timing) return run_timing(timing_size);
 
 	std::cout << "No explicit mode selected; running hydrogen solver with -rmax and -dr.\n";
 	return run_wavefunctions(rmax, dr, wf_states);

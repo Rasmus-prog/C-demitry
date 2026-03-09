@@ -7,7 +7,7 @@ CONVFILES = convergence_dr.dat convergence_rmax.dat
 WAVEFILES = wave_n1.dat wave_n2.dat wave_n3.dat
 
 
-all : Out.txt plot waveplot
+all : Out.txt plot
 
 Out.txt: main
 	./main --jacobi-test > $@
@@ -17,9 +17,8 @@ convergence: $(CONVFILES)
 
 wave: $(WAVEFILES)
 
-plot: convergence.svg
+plot: convergence.svg wavefunctions.svg
 
-waveplot: wavefunctions.svg
 
 convergence.svg: convergence.gnu $(CONVFILES)
 	gnuplot convergence.gnu

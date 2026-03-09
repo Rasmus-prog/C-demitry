@@ -1,6 +1,6 @@
 Wave-functions task: compare lowest 3 eigen-functions with analytical results
 Using Const = 1/sqrt(dr) = 1.82574
-  n=1  overlap=0.999921  saved wave_task_n1.dat
-  n=2  overlap=0.99904  saved wave_task_n2.dat
-  n=3  overlap=0.896052  saved wave_task_n3.dat
+  n=1  overlap=0.999921  saved wave_n1.dat
+  n=2  overlap=0.99904  saved wave_n2.dat
+  n=3  overlap=0.896052  saved wave_n3.dat
 Saved summary to wavefunctions_summary.txt

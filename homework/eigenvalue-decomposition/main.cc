@@ -239,7 +239,7 @@ static int run_wavefunctions(double rmax, double dr, int requested_states) {
 			overlap = -overlap;
 		}
 
-		std::string filename = "wave_task_n" + std::to_string(n) + ".dat";
+		std::string filename = "wave_n" + std::to_string(n) + ".dat";
 		std::ofstream fout(filename);
 		if (!fout) {
 			std::cerr << "Failed to open output file: " << filename << "\n";
@@ -299,6 +299,6 @@ int main(int argc, char** argv) {
 	if (do_convergence) return run_convergence(conv_fixed_rmax, conv_fixed_dr);
 	if (do_wavefunctions) return run_wavefunctions(rmax, dr, wf_states);
 
-	std::cerr << "No mode selected. Use one of: --jacobi-test, --convergence, --wavefunctions\n";
-	return 1;
+	std::cout << "No explicit mode selected; running hydrogen solver with -rmax and -dr.\n";
+	return run_wavefunctions(rmax, dr, wf_states);
 }

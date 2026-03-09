@@ -3,30 +3,35 @@ LDLIBS += -lstdc++ -lm
 
 RMAX ?= 15
 DR ?= 0.3
-DATFILES = wavefunction_n1.dat wavefunction_n2.dat wavefunction_n3.dat
 CONVFILES = convergence_dr.dat convergence_rmax.dat
+WAVEFILES = wave_n1.dat wave_n2.dat wave_n3.dat
 
 
-all : Out.txt dat plot
+all : Out.txt plot waveplot
 
 Out.txt: main
 	./main --jacobi-test > $@
 
 
-dat: $(DATFILES)
-
 convergence: $(CONVFILES)
 
+wave: $(WAVEFILES)
+
 plot: convergence.svg
+
+waveplot: wavefunctions.svg
 
 convergence.svg: convergence.gnu $(CONVFILES)
 	gnuplot convergence.gnu
 
-$(DATFILES): main
-	./main -rmax $(RMAX) -dr $(DR) > hydrogen_run.txt
+wavefunctions.svg: wavefunctions.gnu $(WAVEFILES)
+	gnuplot wavefunctions.gnu
 
 $(CONVFILES): main
 	./main --convergence --conv-fixed-rmax $(RMAX) --conv-fixed-dr $(DR) > convergence_run.txt
+
+$(WAVEFILES): main
+	./main --wavefunctions -rmax $(RMAX) -dr $(DR) --wf-states 3 > wavefunctions_run.txt
 
 main: main.o vector.o matrix.o evd.o
 
@@ -40,6 +45,6 @@ evd.o: vector.h matrix.h evd.h evd.cc
 
 
 
-.PHONY : clean dat convergence plot
+.PHONY : clean convergence plot wave waveplot
 clean:
 	$(RM) [Oo]ut* main *.o *.dat *.svg *.txt

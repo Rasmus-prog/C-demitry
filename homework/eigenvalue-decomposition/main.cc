@@ -188,13 +188,85 @@ static int run_convergence(double fixed_rmax, double fixed_dr) {
 	return 0;
 }
 
+static int run_wavefunctions(double rmax, double dr, int requested_states) {
+	pp::matrix H;
+	pp::vector r;
+	if (!build_hamiltonian(rmax, dr, H, r)) {
+		std::cerr << "Invalid grid for wavefunctions task: ensure rmax>0, dr>0 and at least 2 grid points.\n";
+		return 1;
+	}
+
+	pp::EVD evd(H);
+	int npoints = r.size();
+	std::vector<int> order(npoints);
+	for (int i = 0; i < npoints; i++) order[i] = i;
+	std::sort(order.begin(), order.end(), [&](int a, int b) { return evd.w[a] < evd.w[b]; });
+
+	int nstates = std::min(std::max(requested_states, 1), npoints);
+	double c = 1.0 / std::sqrt(dr);
+
+	std::ofstream summary("wavefunctions_summary.txt");
+	if (!summary) {
+		std::cerr << "Failed to open wavefunctions_summary.txt\n";
+		return 1;
+	}
+	summary << std::setprecision(10);
+	summary << "# rmax=" << rmax << " dr=" << dr << " Const=" << c << "\n";
+	summary << "# n epsilon_numeric epsilon_exact abs_error overlap\n";
+
+	std::cout << "Wave-functions task: compare lowest " << nstates
+	          << " eigen-functions with analytical results\n";
+	std::cout << "Using Const = 1/sqrt(dr) = " << c << "\n";
+
+	for (int s = 0; s < nstates; s++) {
+		int n = s + 1;
+		int col = order[s];
+		double en = evd.w[col];
+		double ex = exact_energy(n);
+
+		pp::vector f_num = evd.V[col];
+		f_num *= c;
+
+		pp::vector f_ex(r.size());
+		for (int i = 0; i < r.size(); i++) f_ex[i] = exact_reduced_radial(n, r[i]);
+		normalize(f_ex, dr);
+
+		double overlap = 0;
+		for (int i = 0; i < r.size(); i++) overlap += f_num[i] * f_ex[i];
+		overlap *= dr;
+		if (overlap < 0) {
+			for (int i = 0; i < r.size(); i++) f_num[i] = -f_num[i];
+			overlap = -overlap;
+		}
+
+		std::string filename = "wave_task_n" + std::to_string(n) + ".dat";
+		std::ofstream fout(filename);
+		if (!fout) {
+			std::cerr << "Failed to open output file: " << filename << "\n";
+			return 1;
+		}
+		fout << std::setprecision(10);
+		fout << "# n=" << n << " rmax=" << rmax << " dr=" << dr << " Const=" << c << "\n";
+		fout << "# r f_num f_exact\n";
+		for (int i = 0; i < r.size(); i++) fout << r[i] << " " << f_num[i] << " " << f_ex[i] << "\n";
+
+		summary << n << " " << en << " " << ex << " " << std::abs(en - ex) << " " << overlap << "\n";
+		std::cout << "  n=" << n << "  overlap=" << overlap << "  saved " << filename << "\n";
+	}
+
+	std::cout << "Saved summary to wavefunctions_summary.txt\n";
+	return 0;
+}
+
 int main(int argc, char** argv) {
 	double rmax = 10.0;
 	double dr = 0.3;
 	bool jacobi_selftest = false;
 	bool do_convergence = false;
+	bool do_wavefunctions = false;
 	double conv_fixed_rmax = 10.0;
 	double conv_fixed_dr = 0.1;
+	int wf_states = 3;
 
 	for (int i = 1; i < argc; i++) {
 		std::string arg = argv[i];
@@ -206,6 +278,10 @@ int main(int argc, char** argv) {
 			jacobi_selftest = true;
 		} else if (arg == "--convergence") {
 			do_convergence = true;
+		} else if (arg == "--wavefunctions") {
+			do_wavefunctions = true;
+		} else if (arg == "--wf-states" && i + 1 < argc) {
+			wf_states = std::stoi(argv[++i]);
 		} else if (arg == "--conv-fixed-rmax" && i + 1 < argc) {
 			conv_fixed_rmax = std::stod(argv[++i]);
 		} else if (arg == "--conv-fixed-dr" && i + 1 < argc) {
@@ -213,77 +289,16 @@ int main(int argc, char** argv) {
 		} else {
 			std::cerr << "Unknown or incomplete option: " << arg << "\n";
 			std::cerr << "Usage: ./main -rmax <value> -dr <value> [--jacobi-test] [--convergence]"
-			          << " [--conv-fixed-rmax <value>] [--conv-fixed-dr <value>]\n";
+			          << " [--conv-fixed-rmax <value>] [--conv-fixed-dr <value>]"
+			          << " [--wavefunctions] [--wf-states <int>]\n";
 			return 1;
 		}
 	}
 
 	if (jacobi_selftest) return run_jacobi_selftest();
 	if (do_convergence) return run_convergence(conv_fixed_rmax, conv_fixed_dr);
+	if (do_wavefunctions) return run_wavefunctions(rmax, dr, wf_states);
 
-	pp::matrix H;
-	pp::vector r;
-	if (!build_hamiltonian(rmax, dr, H, r)) {
-		std::cerr << "Invalid grid: ensure rmax>0, dr>0 and at least 2 grid points.\n";
-		return 1;
-	}
-	int npoints = r.size();
-
-	pp::EVD evd(H);
-
-	std::vector<int> order(npoints);
-	for (int i = 0; i < npoints; i++) order[i] = i;
-	std::sort(order.begin(), order.end(), [&](int a, int b) { return evd.w[a] < evd.w[b]; });
-
-	int nshow = std::min(5, npoints);
-	std::cout << std::setprecision(10);
-	std::cout << "Hydrogen s-wave on grid: rmax=" << rmax << ", dr=" << dr << ", npoints=" << npoints
-	          << "\n\n";
-	std::cout << "Lowest eigenvalues (Hartree):\n";
-	std::cout << " state   numeric            exact              abs.error\n";
-	for (int s = 0; s < nshow; s++) {
-		int n = s + 1;
-		double en = evd.w[order[s]];
-		double ex = exact_energy(n);
-		std::cout << "  " << std::setw(2) << n << "    " << std::setw(14) << en << "  " << std::setw(14) << ex
-		          << "  " << std::setw(14) << std::abs(en - ex) << "\n";
-	}
-
-	int wf_states = std::min(3, nshow);
-	std::cout << "\nRadial reduced wavefunctions f_n(r):\n";
-	std::cout << "Each table compares normalized numerical and exact f_n for n=1.." << wf_states << "\n";
-	for (int s = 0; s < wf_states; s++) {
-		int n = s + 1;
-		pp::vector f_num = evd.V[order[s]];
-		normalize(f_num, dr);
-
-		pp::vector f_ex(npoints);
-		for (int i = 0; i < npoints; i++) f_ex[i] = exact_reduced_radial(n, r[i]);
-		normalize(f_ex, dr);
-
-		double overlap = 0;
-		for (int i = 0; i < npoints; i++) overlap += f_num[i] * f_ex[i];
-		overlap *= dr;
-		if (overlap < 0) {
-			for (int i = 0; i < npoints; i++) f_num[i] = -f_num[i];
-			overlap = -overlap;
-		}
-
-		std::cout << "\nState n=" << n << ", overlap=<f_num|f_exact>=" << overlap << "\n";
-		std::string filename = "wavefunction_n" + std::to_string(n) + ".dat";
-		std::ofstream fout(filename);
-		if (!fout) {
-			std::cerr << "Failed to open output file: " << filename << "\n";
-			return 1;
-		}
-		fout << std::setprecision(10);
-		fout << "# n=" << n << " overlap=" << overlap << "\n";
-		fout << "# r f_num f_exact\n";
-		for (int i = 0; i < npoints; i++) {
-			fout << r[i] << " " << f_num[i] << " " << f_ex[i] << "\n";
-		}
-		std::cout << "Saved table to " << filename << "\n";
-	}
-
-	return 0;
+	std::cerr << "No mode selected. Use one of: --jacobi-test, --convergence, --wavefunctions\n";
+	return 1;
 }

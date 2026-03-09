@@ -1,0 +1,24 @@
+Convergence sweep 1: epsilon0 vs dr (fixed rmax=15)
+  dr=   0.5  epsilon0=     -0.472136  abs.error=0.027864
+  dr=   0.4  epsilon0=     -0.481456  abs.error=0.018544
+  dr=   0.3  epsilon0=     -0.489229  abs.error=0.0107705
+  dr=  0.25  epsilon0=     -0.492423  abs.error=0.0075775
+  dr=   0.2  epsilon0=     -0.495098  abs.error=0.00490243
+  dr=  0.15  epsilon0=     -0.497219  abs.error=0.0027813
+  dr=   0.1  epsilon0=     -0.498756  abs.error=0.00124379
+  dr=  0.08  epsilon0=     -0.499203  abs.error=0.00079745
+  dr=  0.06  epsilon0=     -0.499551  abs.error=0.000449192
+  dr=  0.05  epsilon0=     -0.499688  abs.error=0.00031211
+
+Convergence sweep 2: epsilon0 vs rmax (fixed dr=0.1)
+  rmax=     4  epsilon0=     -0.481898  abs.error=0.0181021
+  rmax=     5  epsilon0=     -0.495135  abs.error=0.00486486
+  rmax=     6  epsilon0=     -0.498023  abs.error=0.00197666
+  rmax=     7  epsilon0=     -0.498616  abs.error=0.00138362
+  rmax=     8  epsilon0=     -0.498731  abs.error=0.00126921
+  rmax=    10  epsilon0=     -0.498755  abs.error=0.00124455
+  rmax=    12  epsilon0=     -0.498756  abs.error=0.00124381
+  rmax=    15  epsilon0=     -0.498756  abs.error=0.00124379
+  rmax=    20  epsilon0=     -0.498756  abs.error=0.00124379
+
+Saved convergence data to convergence_dr.dat and convergence_rmax.dat

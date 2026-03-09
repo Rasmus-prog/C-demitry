@@ -4,8 +4,10 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <string>
+#include <vector>
 
 static double exact_energy(int n) {
 	return -0.5 / (n * n);
@@ -112,10 +114,87 @@ static int run_jacobi_selftest() {
 	return 0;
 }
 
+static bool build_hamiltonian(double rmax, double dr, pp::matrix& H, pp::vector& r) {
+	if (!(rmax > 0 && dr > 0)) return false;
+	int npoints = static_cast<int>(rmax / dr) - 1;
+	if (npoints < 2) return false;
+
+	r.resize(npoints);
+	for (int i = 0; i < npoints; i++) r[i] = dr * (i + 1);
+
+	H.resize(npoints, npoints);
+	double kin = -0.5 / (dr * dr);
+	for (int i = 0; i < npoints - 1; i++) {
+		H[i, i] = -2 * kin;
+		H[i, i + 1] = kin;
+		H[i + 1, i] = kin;
+	}
+	H[npoints - 1, npoints - 1] = -2 * kin;
+	for (int i = 0; i < npoints; i++) H[i, i] += -1.0 / r[i];
+	return true;
+}
+
+static bool lowest_energy(double rmax, double dr, double& e0) {
+	pp::matrix H;
+	pp::vector r;
+	if (!build_hamiltonian(rmax, dr, H, r)) return false;
+
+	pp::EVD evd(H);
+	e0 = evd.w[0];
+	for (int i = 1; i < evd.w.size(); i++) {
+		if (evd.w[i] < e0) e0 = evd.w[i];
+	}
+	return true;
+}
+
+static int run_convergence(double fixed_rmax, double fixed_dr) {
+	std::ofstream drout("convergence_dr.dat");
+	std::ofstream rmaxout("convergence_rmax.dat");
+	if (!drout || !rmaxout) {
+		std::cerr << "Failed to open convergence output files.\n";
+		return 1;
+	}
+
+	drout << std::setprecision(10);
+	rmaxout << std::setprecision(10);
+	drout << "# fixed_rmax=" << fixed_rmax << "\n";
+	drout << "# dr epsilon0 exact abs_error\n";
+	rmaxout << "# fixed_dr=" << fixed_dr << "\n";
+	rmaxout << "# rmax epsilon0 exact abs_error\n";
+
+	const double exact0 = exact_energy(1);
+
+	std::cout << "Convergence sweep 1: epsilon0 vs dr (fixed rmax=" << fixed_rmax << ")\n";
+	for (double sweep_dr : std::vector<double>{0.50, 0.40, 0.30, 0.25, 0.20, 0.15, 0.10, 0.08, 0.06, 0.05}) {
+		double e0 = std::numeric_limits<double>::quiet_NaN();
+		if (lowest_energy(fixed_rmax, sweep_dr, e0)) {
+			drout << sweep_dr << " " << e0 << " " << exact0 << " " << std::abs(e0 - exact0) << "\n";
+			std::cout << "  dr=" << std::setw(6) << sweep_dr << "  epsilon0=" << std::setw(14) << e0
+			          << "  abs.error=" << std::abs(e0 - exact0) << "\n";
+		}
+	}
+
+	std::cout << "\nConvergence sweep 2: epsilon0 vs rmax (fixed dr=" << fixed_dr << ")\n";
+	for (double sweep_rmax : std::vector<double>{4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0}) {
+		double e0 = std::numeric_limits<double>::quiet_NaN();
+		if (lowest_energy(sweep_rmax, fixed_dr, e0)) {
+			rmaxout << sweep_rmax << " " << e0 << " " << exact0 << " " << std::abs(e0 - exact0) << "\n";
+			std::cout << "  rmax=" << std::setw(6) << sweep_rmax << "  epsilon0=" << std::setw(14) << e0
+			          << "  abs.error=" << std::abs(e0 - exact0) << "\n";
+		}
+	}
+
+	std::cout << "\nSaved convergence data to convergence_dr.dat and convergence_rmax.dat\n";
+	return 0;
+}
+
 int main(int argc, char** argv) {
 	double rmax = 10.0;
 	double dr = 0.3;
 	bool jacobi_selftest = false;
+	bool do_convergence = false;
+	double conv_fixed_rmax = 10.0;
+	double conv_fixed_dr = 0.1;
 
 	for (int i = 1; i < argc; i++) {
 		std::string arg = argv[i];
@@ -125,38 +204,30 @@ int main(int argc, char** argv) {
 			dr = std::stod(argv[++i]);
 		} else if (arg == "--jacobi-test") {
 			jacobi_selftest = true;
+		} else if (arg == "--convergence") {
+			do_convergence = true;
+		} else if (arg == "--conv-fixed-rmax" && i + 1 < argc) {
+			conv_fixed_rmax = std::stod(argv[++i]);
+		} else if (arg == "--conv-fixed-dr" && i + 1 < argc) {
+			conv_fixed_dr = std::stod(argv[++i]);
 		} else {
 			std::cerr << "Unknown or incomplete option: " << arg << "\n";
-			std::cerr << "Usage: ./main -rmax <value> -dr <value> [--jacobi-test]\n";
+			std::cerr << "Usage: ./main -rmax <value> -dr <value> [--jacobi-test] [--convergence]"
+			          << " [--conv-fixed-rmax <value>] [--conv-fixed-dr <value>]\n";
 			return 1;
 		}
 	}
 
 	if (jacobi_selftest) return run_jacobi_selftest();
+	if (do_convergence) return run_convergence(conv_fixed_rmax, conv_fixed_dr);
 
-	if (!(rmax > 0 && dr > 0)) {
-		std::cerr << "Both rmax and dr must be positive.\n";
+	pp::matrix H;
+	pp::vector r;
+	if (!build_hamiltonian(rmax, dr, H, r)) {
+		std::cerr << "Invalid grid: ensure rmax>0, dr>0 and at least 2 grid points.\n";
 		return 1;
 	}
-
-	int npoints = static_cast<int>(rmax / dr) - 1;
-	if (npoints < 2) {
-		std::cerr << "Need at least 2 grid points. Increase rmax or decrease dr.\n";
-		return 1;
-	}
-
-	pp::vector r(npoints);
-	for (int i = 0; i < npoints; i++) r[i] = dr * (i + 1);
-
-	pp::matrix H(npoints, npoints);
-	double kin = -0.5 / (dr * dr);
-	for (int i = 0; i < npoints - 1; i++) {
-		H[i, i] = -2 * kin;
-		H[i, i + 1] = 1 * kin;
-		H[i + 1, i] = 1 * kin;
-	}
-	H[npoints - 1, npoints - 1] = -2 * kin;
-	for (int i = 0; i < npoints; i++) H[i, i] += -1.0 / r[i];
+	int npoints = r.size();
 
 	pp::EVD evd(H);
 

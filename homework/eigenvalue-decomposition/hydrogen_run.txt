@@ -1,21 +1,21 @@
-Hydrogen s-wave on grid: rmax=10, dr=0.3, npoints=32
+Hydrogen s-wave on grid: rmax=15, dr=0.1, npoints=149
 
 Lowest eigenvalues (Hartree):
  state   numeric            exact              abs.error
-   1     -0.4892283376            -0.5   0.01077166244
-   2      -0.111120223          -0.125   0.01387977696
-   3     0.09628386115  -0.05555555556    0.1518394167
-   4      0.4117585232        -0.03125    0.4430085232
-   5      0.8296494281           -0.02    0.8496494281
+   1     -0.4987562111            -0.5  0.001243788873
+   2     -0.1244188808          -0.125  0.000581119233
+   3    -0.02684367502  -0.05555555556   0.02871188054
+   4      0.1016274064        -0.03125    0.1328774064
+   5      0.2810791819           -0.02    0.3010791819
 
 Radial reduced wavefunctions f_n(r):
 Each table compares normalized numerical and exact f_n for n=1..3
 
-State n=1, overlap=<f_num|f_exact>=0.9999213662
+State n=1, overlap=<f_num|f_exact>=0.9999989659
 Saved table to wavefunction_n1.dat
 
-State n=2, overlap=<f_num|f_exact>=0.9772124051
+State n=2, overlap=<f_num|f_exact>=0.9989308939
 Saved table to wavefunction_n2.dat
 
-State n=3, overlap=<f_num|f_exact>=0.6134618689
+State n=3, overlap=<f_num|f_exact>=0.8892152303
 Saved table to wavefunction_n3.dat

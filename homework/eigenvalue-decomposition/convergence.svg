@@ -604,16 +604,16 @@
 	</g>
 </g>
 <g fill="none" color="black" stroke="currentColor" stroke-width="2.00" stroke-linecap="butt" stroke-linejoin="miter">
-	<path stroke='rgb(148,   0, 211)'  d='M515.48,90.01 L558.04,90.01 M389.31,138.36 L400.90,258.03 L412.50,293.25 L424.09,298.13 L435.69,299.28 L458.88,299.59
-		L482.07,299.60 L516.85,299.60 L574.82,299.60  '/>	<use xlink:href='#gpPt6' transform='translate(389.31,138.36) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(400.90,258.03) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(412.50,293.25) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(424.09,298.13) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(435.69,299.28) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(458.88,299.59) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(482.07,299.60) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(516.85,299.60) scale(4.50)' color='rgb(148,   0, 211)'/>
-	<use xlink:href='#gpPt6' transform='translate(574.82,299.60) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<path stroke='rgb(148,   0, 211)'  d='M515.48,90.01 L558.04,90.01 M389.31,242.52 L400.90,345.59 L412.50,368.08 L424.09,372.69 L435.69,373.59 L458.88,373.78
+		L482.07,373.78 L516.85,373.78 L574.82,373.78  '/>	<use xlink:href='#gpPt6' transform='translate(389.31,242.52) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(400.90,345.59) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(412.50,368.08) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(424.09,372.69) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(435.69,373.59) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(458.88,373.78) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(482.07,373.78) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(516.85,373.78) scale(4.50)' color='rgb(148,   0, 211)'/>
+	<use xlink:href='#gpPt6' transform='translate(574.82,373.78) scale(4.50)' color='rgb(148,   0, 211)'/>
 	<use xlink:href='#gpPt6' transform='translate(536.76,90.01) scale(4.50)' color='rgb(148,   0, 211)'/>
 </g>
 	</g>

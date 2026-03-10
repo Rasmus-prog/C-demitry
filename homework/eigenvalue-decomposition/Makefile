@@ -2,7 +2,7 @@ CXXFLAGS += -std=c++23 -Wall -Wextra
 LDLIBS += -lstdc++ -lm
 
 RMAX ?= 15
-DR ?= 0.3
+DR ?= 0.1
 CONVFILES = convergence_dr.dat convergence_rmax.dat
 WAVEFILES = wave_n1.dat wave_n2.dat wave_n3.dat
 TIMEFILE = out.times.data

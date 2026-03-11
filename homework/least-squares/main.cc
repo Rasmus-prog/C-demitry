@@ -63,7 +63,7 @@ int main() {
     double pull = delta / sigma_T;
     std::cout << "Deviation: " << delta << " days"
               << "  (" << pull << " sigma)\n";
-    bool agrees_within_uncertainty = pp::approx(half_life, half_life_modern, sigma_T);
+    bool agrees_within_uncertainty = pp::approx(half_life, half_life_modern);
     std::cout << "Does it agree with the modern value within the estimated uncertainty? "
               << (agrees_within_uncertainty ? "Yes" : "No") << "\n";
 

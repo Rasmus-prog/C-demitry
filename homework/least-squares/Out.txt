@@ -1,0 +1,15 @@
+=== Least-squares fit: ln(y) = c0 + c1*t ===
+c0 = ln(a) = 4.95866 +/- 0.0354019
+c1 = -lambda = -0.170624 +/- 0.00715662
+
+Covariance matrix C:
+  0.00125 -0.000197 
+-0.000197  5.12e-05 
+
+
+a      = 142.404 +/- 5.04136
+lambda = 0.170624 +/- 0.00715662 day^-1
+T_1/2  = 4.06242 +/- 0.170394 days
+Modern value for 224Ra: 3.6319 days
+Deviation: 0.430524 days  (2.52664 sigma)
+Does it agree with the modern value within the estimated uncertainty? No

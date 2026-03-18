@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
+#include "cspline.h"
 #include "qspline.h"
 #include "vector.h"
 using pp::vector;
@@ -128,16 +129,20 @@ int main()
 		y.push_back(std::cos(xi));
 	}
 	qspline s(x, y);
+	cspline c(x, y);
 
-	std::cout << "# z  linear(z)  quadratic(z)  cos(z)  linear'(z)  quadratic'(z)  -sin(z)  integ_linear(z)  integ_quadratic(z)  sin(z)\n";
+	std::cout << "# z  linear(z)  quadratic(z)  cubic(z)  cos(z)  linear'(z)  quadratic'(z)  cubic'(z)  -sin(z)  integ_linear(z)  integ_quadratic(z)  integ_cubic(z)  sin(z)\n";
 	for (double z = x[0]; z <= x[x.size() - 1]; z += 0.02) {
 		double sl = linterp(x, y, z);
 		double sq = s.eval(z);
+		double sc = c.eval(z);
 		double dl = linterpDeriv(x, y, z);
 		double dq = s.deriv(z);
+		double dc = c.deriv(z);
 		double Il = linterpInteg(x, y, z);
 		double Iq = s.integ(z);
-		std::cout << z << " " << sl << " " << sq << " " << std::cos(z) << " " << dl << " " << dq << " " << -std::sin(z) << " " << Il << " " << Iq << " " << std::sin(z) << "\n";
+		double Ic = c.integ(z);
+		std::cout << z << " " << sl << " " << sq << " " << sc << " " << std::cos(z) << " " << dl << " " << dq << " " << dc << " " << -std::sin(z) << " " << Il << " " << Iq << " " << Ic << " " << std::sin(z) << "\n";
 	}
 
 	std::cout << "\n\n# knots: x_i  y_i\n";

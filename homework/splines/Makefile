@@ -2,20 +2,26 @@ CXXFLAGS += -std=c++23 -Wall -Wextra
 LDLIBS += -lstdc++ -lm
 
 
-all: spline.svg data.dat
+all: spline.svg spline_linear.svg data.dat
 
 
 data.dat: main
 	./main > $@
 
 
-spline.svg: data.dat spline.gnu
-	gnuplot spline.gnu
+spline.svg: data.dat spline_quadratic.gnu
+	gnuplot spline_quadratic.gnu
 
 
-main: main.o vector.o
+spline_linear.svg: data.dat spline_linear.gnu
+	gnuplot spline_linear.gnu
 
-main.o: vector.h main.cc
+
+main: main.o vector.o qspline.o
+
+main.o: vector.h qspline.h main.cc
+
+qspline.o: qspline.h vector.h qspline.cc
 
 vector.o: vector.h vector.cc
 

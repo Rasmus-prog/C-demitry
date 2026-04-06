@@ -1,0 +1,21 @@
+Simple harmonic oscillator (u'' = -u):
+  Saved 981 points to out_sho.txt
+  Sample: x, u_numeric, u_exact=sin(x), abs_error
+          0             0             0             0
+    1.24837      0.948475      0.948468   7.06717e-06
+    2.49287      0.604136       0.60417   3.43711e-05
+    3.73737     -0.561208     -0.561154   5.40524e-05
+    4.98188     -0.963885     -0.963908   2.24075e-05
+    6.22638    -0.0566685    -0.0567764   0.000107912
+    7.47088       0.92756       0.92751   4.94006e-05
+    8.71538       0.65126      0.651374   0.000114051
+    9.95989     -0.510085     -0.509935   0.000149381
+
+Damped oscillator from scipy.integrate.odeint manual:
+  Saved 2558 points to out_damped_oscillator.txt
+  Final state: theta=0.019763, omega=1.56788
+
+Lotka-Volterra from scipy.integrate.solve_ivp examples:
+  Saved 6531 points to out_lotka_volterra.txt
+  Final state: prey=0.712909, predator=0.075478
+

@@ -1,8 +1,6 @@
 #pragma once
-#include<string>
-#include<vector>
-#include<initializer_list>
-#include<functional>
+#include <initializer_list>
+#include <vector>
 
 namespace pp{
 struct vector {
@@ -25,12 +23,7 @@ struct vector {
 	vector& operator*=(double c);
 	vector& operator/=(double c);
 
-	vector& add(double x);
-	vector& push_back(double x);
-
 	double norm() const;
-	void print(std::string s="") const;
-	vector map(std::function<double(double)> f) const;
 };
 
 vector operator+(const vector& a, const vector& b);
@@ -39,7 +32,4 @@ vector operator-(const vector& a, const vector& b);
 vector operator*(const vector& a, double c);
 vector operator*(double c, const vector& a);
 vector operator/(const vector& a, double c);
-
-bool approx(double x, double y, double acc=1e-6, double eps=1e-6);
-bool approx(const vector& a, const vector& b, double acc=1e-6, double eps=1e-6);
 }

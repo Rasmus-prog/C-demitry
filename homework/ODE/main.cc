@@ -98,7 +98,7 @@ void run_relativistic_orbits() {
 			return ode::Vec{up, 1.0 - u + epsilon * u * u};
 		};
 
-		const double rotations = 8.0;
+		const double rotations = 10.0;
 		const double phi_max = rotations * 2.0 * kPi;
 		auto [phi, y] = ode::driver(f, 0.0, phi_max, ode::Vec{u0, up0}, 0.02, 1e-5, 1e-5);
 		write_solution(file_name, phi, y);

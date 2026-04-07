@@ -24,9 +24,9 @@ Relativistic planetary orbit (u'' + u = 1 + eps*u^2):
   Saved 13 points to out_orbit_circular.txt
   Final state: u=1, u'=0
   Case 2: Newtonian elliptical orbit (eps=0, u(0)=1, u'(0)=-0.5)
-  Saved 114080 points to out_orbit_newtonian_elliptic.txt
+  Saved 153611 points to out_orbit_newtonian_elliptic.txt
   Final state: u=0.999999, u'=-0.5
   Case 3: Relativistic precession (eps=0.01, u(0)=1, u'(0)=-0.5)
-  Saved 112675 points to out_orbit_relativistic_precession.txt
-  Final state: u=1.24832, u'=-0.44118
+  Saved 151729 points to out_orbit_relativistic_precession.txt
+  Final state: u=1.30316, u'=-0.407653
 

@@ -32,10 +32,10 @@ void run_simple_harmonic_oscillator() {
 	};
 
 	auto [x, y] = ode::driver(f, 0.0, 10.0, ode::Vec{0.0, 1.0}, 0.1, 1e-3, 1e-3);
-	write_solution("out_sho.txt", x, y);
+	write_solution("sho.data", x, y);
 
 	std::cout << "Simple harmonic oscillator (u'' = -u):\n";
-	std::cout << "  Saved " << x.size() << " points to out_sho.txt\n";
+	std::cout << "  Saved " << x.size() << " points to sho.data\n";
 	std::cout << "  Sample: x, u_numeric, u_exact=sin(x), abs_error\n";
 	const std::size_t stride = std::max<std::size_t>(1, x.size() / 8);
 	for (std::size_t i = 0; i < x.size(); i += stride) {
@@ -60,10 +60,10 @@ void run_damped_pendulum() {
 	};
 
 	auto [t, y] = ode::driver(f, 0.0, 10.0, ode::Vec{kPi - 0.1, 0.0}, 0.05, 1e-3, 1e-3);
-	write_solution("out_damped_oscillator.txt", t, y);
+	write_solution("damped_oscillator.data", t, y);
 
 	std::cout << "Damped oscillator from scipy.integrate.odeint manual:\n";
-	std::cout << "  Saved " << t.size() << " points to out_damped_oscillator.txt\n";
+	std::cout << "  Saved " << t.size() << " points to damped_oscillator.data\n";
 	std::cout << "  Final state: theta=" << y.back()[0] << ", omega=" << y.back()[1] << "\n\n";
 }
 
@@ -83,10 +83,10 @@ void run_lotka_volterra() {
 	};
 
 	auto [t, z] = ode::driver(f, 0.0, 15.0, ode::Vec{10.0, 5.0}, 0.05, 1e-3, 1e-3);
-	write_solution("out_lotka_volterra.txt", t, z);
+	write_solution("lotka_volterra.data", t, z);
 
 	std::cout << "Lotka-Volterra from scipy.integrate.solve_ivp examples:\n";
-	std::cout << "  Saved " << t.size() << " points to out_lotka_volterra.txt\n";
+	std::cout << "  Saved " << t.size() << " points to lotka_volterra.data\n";
 	std::cout << "  Final state: prey=" << z.back()[0] << ", predator=" << z.back()[1] << "\n\n";
 }
 
@@ -109,14 +109,68 @@ void run_relativistic_orbits() {
 
 	std::cout << "Relativistic planetary orbit (u'' + u = 1 + eps*u^2):\n";
 	std::cout << "  Case 1: Newtonian circular orbit (eps=0, u(0)=1, u'(0)=0)\n";
-	simulate_orbit(0.0, 1.0, 0.0, "out_orbit_circular.txt");
+	simulate_orbit(0.0, 1.0, 0.0, "orbit_circular.data");
 
 	std::cout << "  Case 2: Newtonian elliptical orbit (eps=0, u(0)=1, u'(0)=-0.5)\n";
-	simulate_orbit(0.0, 1.0, -0.5, "out_orbit_newtonian_elliptic.txt");
+	simulate_orbit(0.0, 1.0, -0.5, "orbit_newtonian_elliptic.data");
 
 	std::cout << "  Case 3: Relativistic precession (eps=0.01, u(0)=1, u'(0)=-0.5)\n";
-	simulate_orbit(0.01, 1.0, -0.5, "out_orbit_relativistic_precession.txt");
+	simulate_orbit(0.01, 1.0, -0.5, "orbit_relativistic_precession.data");
 	std::cout << '\n';
+}
+
+void run_three_body_figure8() {
+	// Equal-mass Newtonian three-body figure-8 initial conditions.
+	const ode::Vec z0{
+		 0.4662036850,  0.4323657300,
+		 0.4662036850,  0.4323657300,
+		-0.9324073700, -0.8647314600,
+		 0.9700043600, -0.2430875300,
+		-0.9700043600,  0.2430875300,
+		 0.0,           0.0
+	};
+
+	ode::OdeFunction f = [](double /*t*/, const ode::Vec& z) {
+		auto ax_from = [](double xi, double yi, double xj, double yj) {
+			const double dx = xj - xi;
+			const double dy = yj - yi;
+			const double r2 = dx * dx + dy * dy;
+			const double inv_r3 = 1.0 / (r2 * std::sqrt(r2));
+			return std::pair<double, double>{dx * inv_r3, dy * inv_r3};
+		};
+
+		const double x1 = z[6], y1 = z[7];
+		const double x2 = z[8], y2 = z[9];
+		const double x3 = z[10], y3 = z[11];
+
+		const auto [a12x, a12y] = ax_from(x1, y1, x2, y2);
+		const auto [a13x, a13y] = ax_from(x1, y1, x3, y3);
+		const auto [a21x, a21y] = ax_from(x2, y2, x1, y1);
+		const auto [a23x, a23y] = ax_from(x2, y2, x3, y3);
+		const auto [a31x, a31y] = ax_from(x3, y3, x1, y1);
+		const auto [a32x, a32y] = ax_from(x3, y3, x2, y2);
+
+		return ode::Vec{
+			a12x + a13x, a12y + a13y,
+			a21x + a23x, a21y + a23y,
+			a31x + a32x, a31y + a32y,
+			z[0], z[1],
+			z[2], z[3],
+			z[4], z[5]
+		};
+	};
+
+	const double period = 6.32591398;
+
+	auto [t, z] = ode::driver(f, 0.0, 3.0 * period, z0, 1e-2, 1e-4, 1e-4);
+	write_solution("three_body_figure8.data", t, z);
+
+	std::cout << "Newtonian three-body figure-8 orbit (m_i=1, G=1):\n";
+	std::cout << "  Saved " << t.size() << " points to three_body_figure8.data\n";
+	std::cout << "  Final positions:"
+	          << " r1=(" << z.back()[6] << ", " << z.back()[7] << ")"
+	          << " r2=(" << z.back()[8] << ", " << z.back()[9] << ")"
+	          << " r3=(" << z.back()[10] << ", " << z.back()[11] << ")\n\n";
 }
 
 } // namespace
@@ -126,5 +180,6 @@ int main() {
 		run_damped_pendulum();
 		run_lotka_volterra();
 		run_relativistic_orbits();
+		run_three_body_figure8();
 	return 0;
 }

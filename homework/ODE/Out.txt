@@ -1,5 +1,5 @@
 Simple harmonic oscillator (u'' = -u):
-  Saved 981 points to out_sho.txt
+  Saved 981 points to sho.data
   Sample: x, u_numeric, u_exact=sin(x), abs_error
           0             0             0             0
     1.24837      0.948475      0.948468   7.06717e-06
@@ -12,21 +12,25 @@ Simple harmonic oscillator (u'' = -u):
     9.95989     -0.510085     -0.509935   0.000149381
 
 Damped oscillator from scipy.integrate.odeint manual:
-  Saved 2558 points to out_damped_oscillator.txt
+  Saved 2558 points to damped_oscillator.data
   Final state: theta=0.019763, omega=1.56788
 
 Lotka-Volterra from scipy.integrate.solve_ivp examples:
-  Saved 6531 points to out_lotka_volterra.txt
+  Saved 6531 points to lotka_volterra.data
   Final state: prey=0.712909, predator=0.075478
 
 Relativistic planetary orbit (u'' + u = 1 + eps*u^2):
   Case 1: Newtonian circular orbit (eps=0, u(0)=1, u'(0)=0)
-  Saved 13 points to out_orbit_circular.txt
+  Saved 13 points to orbit_circular.data
   Final state: u=1, u'=0
   Case 2: Newtonian elliptical orbit (eps=0, u(0)=1, u'(0)=-0.5)
-  Saved 153611 points to out_orbit_newtonian_elliptic.txt
+  Saved 153611 points to orbit_newtonian_elliptic.data
   Final state: u=0.999999, u'=-0.5
   Case 3: Relativistic precession (eps=0.01, u(0)=1, u'(0)=-0.5)
-  Saved 151729 points to out_orbit_relativistic_precession.txt
+  Saved 151729 points to orbit_relativistic_precession.data
   Final state: u=1.30316, u'=-0.407653
+
+Newtonian three-body figure-8 orbit (m_i=1, G=1):
+  Saved 31235 points to three_body_figure8.data
+  Final positions: r1=(0.969998, -0.243094) r2=(-0.970011, 0.243081) r3=(1.34593e-05, 1.29076e-05)
 

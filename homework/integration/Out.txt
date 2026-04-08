@@ -14,3 +14,16 @@ f4 ∫01 dx ln(x)/√(x) = -4
 result = -3.99992
 ncalls = 8604
 result is within 1e-3 of -4: true
+transformation results 
+f2 ∫01 dx 1/√(x) = 2 with the Clenshaw–Curtis variable transformation
+result = 1.99999
+ncalls = 16
+result is within 1e-3 of 2: true
+f4 ∫01 dx ln(x)/√(x) = -4 with the Clenshaw–Curtis variable transformation
+result = -3.99987
+ncalls = 96
+result is within 1e-3 of -4: true
+f5 ∫0∞ dx e^(-x) = 1
+result = 1.00054
+ncalls = 20
+result is within 1e-3 of 1: true

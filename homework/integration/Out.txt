@@ -1,0 +1,16 @@
+f1 ∫01 dx √(x) = 2/3
+result = 0.666954
+ncalls = 16
+result is within 1e-3 of 2/3: true
+f2 ∫01 dx 1/√(x) = 2
+result = 1.99996
+ncalls = 8572
+result is within 1e-3 of 2: true
+f3 ∫01 dx √(1-x²) = π/4
+result = 0.785812
+ncalls = 16
+result is within 1e-3 of π/4: true
+f4 ∫01 dx ln(x)/√(x) = -4
+result = -3.99992
+ncalls = 8604
+result is within 1e-3 of -4: true

@@ -1,17 +1,21 @@
 f1 ∫01 dx √(x) = 2/3
 result = 0.666954
+error estimate = 0.000451855
 ncalls = 16
 result is within 1e-3 of 2/3: true
 f2 ∫01 dx 1/√(x) = 2
 result = 1.99996
+error estimate = 0.000412013
 ncalls = 8572
 result is within 1e-3 of 2: true
 f3 ∫01 dx √(1-x²) = π/4
 result = 0.785812
+error estimate = 0.00107321
 ncalls = 16
 result is within 1e-3 of π/4: true
 f4 ∫01 dx ln(x)/√(x) = -4
 result = -3.99992
+error estimate = 0.000754017
 ncalls = 8604
 result is within 1e-3 of -4: true
 erf(1) with acc=1e-6, eps=0: 0.842701
@@ -19,16 +23,19 @@ reference erf(1): 0.842701
 transformation results 
 f2 ∫01 dx 1/√(x) = 2 with the Clenshaw–Curtis variable transformation
 result = 1.99999
+error estimate = 0.00118737
 ncalls = 16
 ncalls with transformation is 16 vs 8572 without transformation
 result is within 1e-3 of 2: true
 f4 ∫01 dx ln(x)/√(x) = -4 with the Clenshaw–Curtis variable transformation
 result = -3.99987
+error estimate = 0.00111272
 ncalls = 96
 ncalls with transformation is 96 vs 8604 without transformation
 result is within 1e-3 of -4: true
 f5 ∫0∞ dx e^(-x) = 1
 result = 1
+error estimate = 6.74005e-05
 ncalls = 88
 result is within 1e-3 of 1: true
 

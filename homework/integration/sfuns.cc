@@ -2,13 +2,13 @@
 
 #include <cmath>
 
-double integrate_finite(const Function& f,
-						double a,
-						double b,
-						double acc = 1e-3,
-						double eps = 1e-3,
-						std::optional<double> f2 = std::nullopt,
-						std::optional<double> f3 = std::nullopt) {
+std::pair<double, double> integrate_finite(const Function& f,
+											double a,
+											double b,
+											double acc = 1e-3,
+											double eps = 1e-3,
+											std::optional<double> f2 = std::nullopt,
+											std::optional<double> f3 = std::nullopt) {
 	const double h = b - a;
 
 	const double x1 = a + h / 6.0;
@@ -28,23 +28,25 @@ double integrate_finite(const Function& f,
 	const double tol = acc + eps * std::abs(Q);
 
 	if (err < tol) {
-		return Q;
+		return {Q, err};
 	}
 
 	const double m = (a + b) / 2.0;
 	const double nextAcc = acc / std::sqrt(2.0);
+	auto left = integrate_finite(f, a, m, nextAcc, eps, v1, v2);
+	auto right = integrate_finite(f, m, b, nextAcc, eps, v3, v4);
 
-	return integrate_finite(f, a, m, nextAcc, eps, v1, v2) +
-		   integrate_finite(f, m, b, nextAcc, eps, v3, v4);
+	return {left.first + right.first,
+			std::sqrt(left.second * left.second + right.second * right.second)};
 }
 
-double integrate(const Function& f,
-				 double a,
-				 double b,
-				 double acc,
-				 double eps,
-				 std::optional<double> f2,
-				 std::optional<double> f3) {
+std::pair<double, double> integrate(const Function& f,
+									   double a,
+									   double b,
+									   double acc,
+									   double eps,
+									   std::optional<double> f2,
+									   std::optional<double> f3) {
 	if (std::isfinite(a) && std::isfinite(b)) {
 		return integrate_finite(f, a, b, acc, eps, f2, f3);
 	}
@@ -60,8 +62,10 @@ double integrate(const Function& f,
 			const double dxdt = 1.0 / ((1.0 - t) * (1.0 - t));
 			return f(x) * dxdt;
 		};
-		return integrate_clenshaw_curtis(left_half, 0.0, 1.0, acc / std::sqrt(2.0), eps) +
-			   integrate_clenshaw_curtis(right_half, 0.0, 1.0, acc / std::sqrt(2.0), eps);
+		auto left = integrate_clenshaw_curtis(left_half, 0.0, 1.0, acc / std::sqrt(2.0), eps);
+		auto right = integrate_clenshaw_curtis(right_half, 0.0, 1.0, acc / std::sqrt(2.0), eps);
+		return {left.first + right.first,
+				std::sqrt(left.second * left.second + right.second * right.second)};
 	}
 
 	if (std::isinf(b)) {
@@ -78,7 +82,7 @@ double integrate(const Function& f,
 		const double dxdt = 1.0 / ((1.0 - t) * (1.0 - t));
 		return f(x) * dxdt;
 	};
-	return integrate_clenshaw_curtis(transformed, 0.0, 1.0, acc, eps);
+		return integrate_clenshaw_curtis(transformed, 0.0, 1.0, acc, eps);
 }
 
 double errf_func(double x, double acc, double eps) {
@@ -86,19 +90,19 @@ double errf_func(double x, double acc, double eps) {
 		return -errf_func(-x, acc, eps);
 	} else if (x <= 1.0) {
 		auto f = [](double t) { return std::exp(-t * t); };
-		return 2.0 / std::sqrt(M_PI) * integrate(f, 0.0, x, acc, eps);
+		return 2.0 / std::sqrt(M_PI) * integrate(f, 0.0, x, acc, eps).first;
 	} else {
 		auto f = [x](double t) { return std::exp(-(x + (1.0 - t) / t) * (x + (1.0 - t) / t)) / t / t; };
-		return 1.0 - 2.0 / std::sqrt(M_PI) * integrate(f, 0.0, 1.0, acc, eps);
+		return 1.0 - 2.0 / std::sqrt(M_PI) * integrate(f, 0.0, 1.0, acc, eps).first;
 	}
 }
 
 // Inplement an (open quandrature) adaptive integrator with the Clenshaw-Curtis variable transformation,
-double integrate_clenshaw_curtis(const Function& f,
-								 double a,
-								 double b,
-								 double acc,
-								 double eps) {
+std::pair<double, double> integrate_clenshaw_curtis(const Function& f,
+											   double a,
+											   double b,
+											   double acc,
+											   double eps) {
 	auto transformed_f = [f, a, b](double t) {
 		const double x = (a + b) / 2.0 + (b - a) / 2.0 * std::cos(M_PI * t);
 		return f(x) * (b - a) / 2.0 * M_PI * std::sin(M_PI * t);

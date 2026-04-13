@@ -1,7 +1,9 @@
 #include <cmath>
+#include <iomanip>
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <string>
 #include "sfuns.h"
 
 
@@ -123,5 +125,34 @@ int main() {
 	std::cout << "error estimate = " << error7 << '\n';
     std::cout << "ncalls = " << ncalls9 << '\n';
     std::cout << "result is within 1e-3 of 1: " << (std::abs(result7 - 1.0) < 1e-3 ? "true" : "false") << '\n';
+
+    std::ofstream errq_out("error_quality.data");
+    errq_out << "# case acc est_error actual_error ratio ncalls result exact\n";
+    // GAI START
+    auto investigate = [&](const std::string& name, auto func, double a, double b, double exact) {
+        std::cout << "\nerror estimate investigation: " << name << '\n';
+        std::cout << "case acc est_error actual_error ratio ncalls\n";
+        
+            double acc = 1e-6;
+            int ncalls = 0;
+            auto wrapped = [&ncalls, func](double x) {
+                ++ncalls;
+                return func(x);
+            };
+            const auto [result, est] = integrate(wrapped, a, b, acc, acc);
+            const double actual = std::abs(result - exact);
+            const double ratio = est > 0.0 ? actual / est : std::numeric_limits<double>::infinity();
+            errq_out << name << ' ' << acc << ' ' << est << ' ' << actual << ' ' << ratio << ' '
+                     << ncalls << ' ' << result << ' ' << exact << '\n';
+            std::cout << name << ' ' << acc << ' ' << est << ' ' << actual << ' ' << ratio << ' '
+                      << ncalls << '\n';
+    };
+    // GAI END
+
+    investigate("1/sqrt(x) on [0,1]", [](double x) { return 1.0 / std::sqrt(x); }, 0.0, 1.0, 2.0);
+    investigate("log(x)/sqrt(x) on [0,1]", [](double x) { return std::log(x) / std::sqrt(x); }, 0.0, 1.0, -4.0);
+    investigate("exp(-x) on [0,inf)", [](double x) { return std::exp(-x); }, 0.0, std::numeric_limits<double>::infinity(), 1.0);
+    investigate("exp(-x*x) on [0,inf)", [](double x) { return std::exp(-x * x); }, 0.0, std::numeric_limits<double>::infinity(), std::sqrt(M_PI) / 2.0);
+    errq_out.close();
 	return 0;
 }

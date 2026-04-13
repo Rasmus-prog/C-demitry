@@ -39,6 +39,22 @@ error estimate = 6.74005e-05
 ncalls = 88
 result is within 1e-3 of 1: true
 
+error estimate investigation: 1/sqrt(x) on [0,1]
+case acc est_error actual_error ratio ncalls
+1/sqrt(x) on [0,1] 1e-06 6.14883e-07 1.05084e-09 0.00170901 123900
+
+error estimate investigation: log(x)/sqrt(x) on [0,1]
+case acc est_error actual_error ratio ncalls
+log(x)/sqrt(x) on [0,1] 1e-06 6.1375e-07 5.86947e-10 0.000956329 302996
+
+error estimate investigation: exp(-x) on [0,inf)
+case acc est_error actual_error ratio ncalls
+exp(-x) on [0,inf) 1e-06 5.24278e-07 1.19993e-08 0.0228873 540
+
+error estimate investigation: exp(-x*x) on [0,inf)
+case acc est_error actual_error ratio ncalls
+exp(-x*x) on [0,inf) 1e-06 4.50977e-07 2.88108e-07 0.638853 668
+
 --- integration.py output ---
 f2 ∫01 dx 1/√(x) = 2
 result =  1.9999999999999984

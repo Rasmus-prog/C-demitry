@@ -5,7 +5,10 @@ PYTHON ?= python3
 
 all: plots Out.txt
 
-plots : erf_acc.svg erf_out.svg
+plots : erf_acc.svg erf_out.svg error_quality.svg
+
+error_quality.svg : error_quality.gnu error_quality.data
+	gnuplot error_quality.gnu
 
 erf_out.svg : erf_out.gnu erf_out.data
 	gnuplot erf_out.gnu
@@ -13,7 +16,7 @@ erf_out.svg : erf_out.gnu erf_out.data
 erf_acc.svg : erf_acc.gnu erf_acc.data
 	gnuplot erf_acc.gnu
 
-erf_acc.data erf_out.data: main
+erf_acc.data erf_out.data error_quality.data: main
 	./main > /dev/null
 
 Out.txt: main integration.py

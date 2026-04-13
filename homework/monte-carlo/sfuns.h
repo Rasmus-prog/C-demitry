@@ -10,3 +10,8 @@ std::pair<double, double> monte_carlo_integrate(
     const Function& f,
     const std::vector<std::pair<double, double>>& bounds,
     int num_samples);
+
+std::pair<double, double> quasi_monte_carlo_integrate(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples);

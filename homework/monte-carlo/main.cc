@@ -37,5 +37,10 @@ int main() {
     std::vector<std::pair<double, double>> bounds2 = {{0.0, M_PI}, {0.0, M_PI}, {0.0, M_PI}};
     auto [integral2, error2] = monte_carlo_integrate(f2, bounds2, 1000000);
     std::cout << "Estimated value of the integral: " << integral2 << " ± " << error2 << std::endl;
-	return 0;
+	
+    auto [integral_qmc, error_qmc] = quasi_monte_carlo_integrate(f2, bounds2, 1000000);
+    std::cout << "Estimated value of the integral (QMC): " << integral_qmc << " ± " << error_qmc << std::endl;
+
+    
+    return 0;
 }

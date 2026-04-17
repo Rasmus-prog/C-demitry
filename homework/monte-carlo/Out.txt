@@ -1,11 +1,11 @@
 Estimated area of unit circle: 4 ± 0 with sample size: 1
 Estimated area of unit circle: 4 ± 0 with sample size: 10
-Estimated area of unit circle: 3.28 ± 0.153675 with sample size: 100
-Estimated area of unit circle: 3.12 ± 0.0523985 with sample size: 1000
-Estimated area of unit circle: 3.1448 ± 0.0163995 with sample size: 10000
-Estimated area of unit circle: 3.14296 ± 0.00519003 with sample size: 100000
-Estimated area of unit circle: 3.14268 ± 0.00164143 with sample size: 1000000
+Estimated area of unit circle: 3 ± 0.173205 with sample size: 100
+Estimated area of unit circle: 3.148 ± 0.051789 with sample size: 1000
+Estimated area of unit circle: 3.1368 ± 0.016455 with sample size: 10000
+Estimated area of unit circle: 3.13492 ± 0.00520764 with sample size: 100000
+Estimated area of unit circle: 3.14092 ± 0.00164265 with sample size: 1000000
 
 Estimated value of the integral: ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1
-Estimated value of the integral: 1.39845 ± 0.00956452
+Estimated value of the integral: 1.37809 ± 0.00512096
 Estimated value of the integral (QMC): 1.39065 ± 0.0048296

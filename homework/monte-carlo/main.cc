@@ -27,6 +27,18 @@ int main() {
     }
     out.close();
 
+    // Calculate the volume of a three-dimensional ellipsoid with semi-axes a=1, b=2, and c=3, defined by the equation
+    //    x²/a²+y²/b²+z²/c² ≤ 1 
+    auto f1 = [](const std::vector<double>& x) {
+        double r2 = (x[0] * x[0]) / (1.0 * 1.0) + (x[1] * x[1]) / (2.0 * 2.0) + (x[2] * x[2]) / (3.0 * 3.0);
+        return r2 <= 1.0 ? 1.0 : 0.0;
+    };
+    std::vector<std::pair<double, double>> bounds1 = {{-1.0, 1.0}, {-2.0, 2.0}, {-3.0, 3.0}};
+    auto [integral1, error1] = monte_carlo_integrate(f1, bounds1, 1000000);
+    std::cout << "\n";
+    std::cout << "Estimated volume of the ellipsoid: " << integral1 << " ± " << error1 << std::endl;
+    std::cout << "Actual volume of the ellipsoid: " << (4.0 / 3.0) * M_PI * 1.0 * 2.0 * 3.0 << std::endl;
+
     // ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1
     std::cout << "\n";
     std::cout << "Estimated value of the integral: ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1" << std::endl;

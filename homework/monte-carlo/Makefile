@@ -3,7 +3,7 @@ LDLIBS += -lstdc++ -lm
 PYTHON ?= python3
 
 
-all: plots Out.txt
+all: Out.txt plots
 
 plots: unit_circle.svg
 

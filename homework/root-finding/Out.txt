@@ -1,0 +1,35 @@
+Simple 1D test: x^2-2
+  start = (2)
+  root  = (1.41421356237)
+  ||f(root)|| = 4.47508696766e-12
+
+Simple 2D test: x^2+y^2=1, x=y
+  start = (1, 0.5)
+  root  = (0.707106781187, 0.707106781187)
+  ||f(root)|| = 2.28217444942e-12
+
+Rosenbrock stationary point from (-1.2,1.0)
+  point = (1, 1)
+  ||grad|| = 1.25011112573e-13
+  f(point) = 3.90694456667e-27
+
+Himmelblau stationary point from (3, 2)
+  point = (3, 2)
+  ||grad|| = 0
+  f(point) = 0
+
+Himmelblau stationary point from (-2, 3)
+  point = (-2.80511808695, 3.13131251825)
+  ||grad|| = 1.12655862208e-14
+  f(point) = 7.88860905221e-31
+
+Himmelblau stationary point from (-4, -4)
+  point = (-3.77931025338, -3.28318599129)
+  ||grad|| = 1.17987061463e-14
+  f(point) = 7.88860905221e-31
+
+Himmelblau stationary point from (4, -2)
+  point = (3.58442834033, -1.84812652696)
+  ||grad|| = 1.99844962895e-11
+  f(point) = 2.57832875984e-24
+

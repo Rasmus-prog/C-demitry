@@ -1,7 +1,8 @@
 #include "sfuns.h"
-
+#include "lcg.h"
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <random>
 #include <vector>
 
@@ -42,40 +43,71 @@ double radical_inverse(int index, int base) {
 double map_to_bounds(const std::pair<double, double>& bound, double u) {
     return bound.first + u * (bound.second - bound.first);
 }
-
-} // namespace
-
 // GAI end
 
-std::pair<double, double> monte_carlo_integrate(
+
+template <typename Generator>
+std::pair<double, double> integrate_with_generator(
     const Function& f,
     const std::vector<std::pair<double, double>>& bounds,
-    int num_samples) {
-    int dim = bounds.size();
+    int num_samples,
+    Generator& gen) {
+    int dim = static_cast<int>(bounds.size());
     double volume = 1.0;
-    for (const auto& b : bounds) {
-        volume *= (b.second - b.first);
+    for (const auto& bound : bounds) {
+        volume *= (bound.second - bound.first);
     }
+
     std::vector<double> x(dim);
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
     double sum = 0.0;
     double sum2 = 0.0;
+
     for (int i = 0; i < num_samples; ++i) {
         for (int k = 0; k < dim; ++k) {
-            x[k] = bounds[k].first + dis(gen) * (bounds[k].second - bounds[k].first);
+            x[k] = map_to_bounds(bounds[k], dis(gen));
         }
         double fx = f(x);
         sum += fx;
         sum2 += fx * fx;
     }
+
     double mean = sum / num_samples;
     double variance = sum2 / num_samples - mean * mean;
     if (variance < 0.0) variance = 0.0;
     double sigma = std::sqrt(variance);
 
     return {mean * volume, sigma * volume / std::sqrt(num_samples)};
+}
+
+} // namespace
+
+
+std::pair<double, double> monte_carlo_integrate(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    return integrate_with_generator(f, bounds, num_samples, gen);
+}
+
+std::pair<double, double> monte_carlo_integrate_mt19937(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    return integrate_with_generator(f, bounds, num_samples, gen);
+}
+
+std::pair<double, double> monte_carlo_integrate_lcg(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples) {
+    std::random_device rd;
+    lcg gen(rd());
+    return integrate_with_generator(f, bounds, num_samples, gen);
 }
 
 std::pair<double, double> quasi_monte_carlo_integrate(

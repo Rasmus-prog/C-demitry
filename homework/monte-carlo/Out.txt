@@ -1,14 +1,16 @@
 Estimated area of unit circle: 4 ± 0 with sample size: 1
-Estimated area of unit circle: 3.6 ± 0.379473 with sample size: 10
-Estimated area of unit circle: 3.44 ± 0.138795 with sample size: 100
-Estimated area of unit circle: 3.092 ± 0.0529862 with sample size: 1000
-Estimated area of unit circle: 3.1512 ± 0.0163546 with sample size: 10000
-Estimated area of unit circle: 3.14316 ± 0.00518959 with sample size: 100000
-Estimated area of unit circle: 3.14418 ± 0.00164038 with sample size: 1000000
+Estimated area of unit circle: 2.4 ± 0.619677 with sample size: 10
+Estimated area of unit circle: 2.96 ± 0.175454 with sample size: 100
+Estimated area of unit circle: 3.18 ± 0.0510647 with sample size: 1000
+Estimated area of unit circle: 3.1608 ± 0.0162866 with sample size: 10000
+Estimated area of unit circle: 3.14868 ± 0.00517739 with sample size: 100000
+Estimated area of unit circle: 3.1443 ± 0.0016403 with sample size: 1000000
 
-Estimated volume of the ellipsoid: 25.1273 ± 0.0239735
+Estimated volume of the ellipsoid: 25.1158 ± 0.023974
 Actual volume of the ellipsoid: 25.1327
 
-Estimated value of the integral: ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1
-Estimated value of the integral: 1.38338 ± 0.00552354
-Estimated value of the integral (QMC): 1.39065 ± 0.0048296
+Singular integral: ∫0π dx/π ∫0π dy/π ∫0π dz/π [1-cos(x)cos(y)cos(z)]^-1
+std::mt19937: 1.38942 ± 0.0104484
+LCG:          1.38113 ± 0.00628322
+QMC:          1.39065 ± 0.0048296
+Reference:    1.3932

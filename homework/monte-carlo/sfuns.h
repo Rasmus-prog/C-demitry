@@ -11,6 +11,16 @@ std::pair<double, double> monte_carlo_integrate(
     const std::vector<std::pair<double, double>>& bounds,
     int num_samples);
 
+std::pair<double, double> monte_carlo_integrate_mt19937(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples);
+
+std::pair<double, double> monte_carlo_integrate_lcg(
+    const Function& f,
+    const std::vector<std::pair<double, double>>& bounds,
+    int num_samples);
+
 std::pair<double, double> quasi_monte_carlo_integrate(
     const Function& f,
     const std::vector<std::pair<double, double>>& bounds,

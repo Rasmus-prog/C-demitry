@@ -8,13 +8,37 @@
 
 
 int main() {
+    // Compare pseudo-random and quasi-random scaling on a smooth benchmark.
+    auto smooth = [](const std::vector<double>& x) {
+        double sum = 0.0;
+        for (double value : x) {
+            sum += value * value;
+        }
+        return std::exp(-sum);
+    };
+    std::vector<std::pair<double, double>> unit_cube3 = {{0.0, 1.0}, {0.0, 1.0}, {0.0, 1.0}};
+    std::vector<int> samples = {10, 100, 1000, 10000, 100000};
+    const double smooth_exact = std::pow(0.5 * std::sqrt(M_PI) * std::erf(1.0), 3);
+    std::ofstream scaling_out("scaling.data");
+    scaling_out << "# N std_error qmc_error lcg_error std_actual qmc_actual lcg_actual\n";
+    for (int num_samples : samples) {
+        auto [std_integral, std_error] = monte_carlo_integrate_mt19937(smooth, unit_cube3, num_samples);
+        auto [qmc_integral, qmc_error] = quasi_monte_carlo_integrate(smooth, unit_cube3, num_samples);
+        auto [lcg_integral, lcg_error] = monte_carlo_integrate_lcg(smooth, unit_cube3, num_samples);
+        scaling_out << num_samples << ' ' << std_error << ' ' << qmc_error << ' ' << lcg_error << ' '
+                    << std::abs(std_integral - smooth_exact) << ' '
+                    << std::abs(qmc_integral - smooth_exact) << ' '
+                    << std::abs(lcg_integral - smooth_exact) << '\n';
+    }
+    scaling_out.close();
+
     // monte_carlo_integrate test for unit circle area as a function of the number of samples
     auto f = [](const std::vector<double>& x) {
         double r2 = x[0] * x[0] + x[1] * x[1];
         return r2 <= 1.0 ? 1.0 : 0.0;
     };
     std::vector<std::pair<double, double>> bounds = {{-1.0, 1.0}, {-1.0, 1.0}};
-    std::vector<int> samples = {1, 10, 100, 1000, 10000, 100000, 1000000};
+    samples = {1, 10, 100, 1000, 10000, 100000, 1000000};
     std::ofstream out("unit_circle.data");
     out << "# Samples Estimated_Area Error Actual" << std::endl;
     const double exact = M_PI;
@@ -39,19 +63,21 @@ int main() {
     std::cout << "Estimated volume of the ellipsoid: " << integral1 << " ± " << error1 << std::endl;
     std::cout << "Actual volume of the ellipsoid: " << (4.0 / 3.0) * M_PI * 1.0 * 2.0 * 3.0 << std::endl;
 
-    // ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1
+    // Compare the requested singular integral using three generators.
     std::cout << "\n";
-    std::cout << "Estimated value of the integral: ∫0π  dx/π ∫0π  dy/π ∫0π  dz/π [1-cos(x)cos(y)cos(z)]-1" << std::endl;
+    std::cout << "Singular integral: ∫0π dx/π ∫0π dy/π ∫0π dz/π [1-cos(x)cos(y)cos(z)]^-1" << std::endl;
     auto f2 = [](const std::vector<double>& x) {
         return (1.0 / (M_PI * M_PI * M_PI)) /
                (1.0 - std::cos(x[0]) * std::cos(x[1]) * std::cos(x[2]));
     };
     std::vector<std::pair<double, double>> bounds2 = {{0.0, M_PI}, {0.0, M_PI}, {0.0, M_PI}};
-    auto [integral2, error2] = monte_carlo_integrate(f2, bounds2, 1000000);
-    std::cout << "Estimated value of the integral: " << integral2 << " ± " << error2 << std::endl;
-	
+    auto [integral_std, error_std] = monte_carlo_integrate_mt19937(f2, bounds2, 1000000);
+    auto [integral_lcg, error_lcg] = monte_carlo_integrate_lcg(f2, bounds2, 1000000);
     auto [integral_qmc, error_qmc] = quasi_monte_carlo_integrate(f2, bounds2, 1000000);
-    std::cout << "Estimated value of the integral (QMC): " << integral_qmc << " ± " << error_qmc << std::endl;
+    std::cout << "std::mt19937: " << integral_std << " ± " << error_std << std::endl;
+    std::cout << "LCG:          " << integral_lcg << " ± " << error_lcg << std::endl;
+    std::cout << "QMC:          " << integral_qmc << " ± " << error_qmc << std::endl;
+    std::cout << "Reference:    " << 1.3932039296856769 << std::endl;
 
     
     return 0;

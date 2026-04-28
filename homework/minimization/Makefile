@@ -1,6 +1,7 @@
 CXXFLAGS += -std=c++23 -Wall -Wextra
 LDLIBS += -lstdc++ -lm
 
+
 all : Out.txt
 
 main: main.o sfuns.o
@@ -12,6 +13,7 @@ sfuns.o: sfuns.cc sfuns.h
 Out.txt: main
 	./main > $@
 
+
 .PHONY : clean
 clean:
-	$(RM) [Oo]ut* main *.o
+	$(RM) [Oo]ut* main *.o *.svg *.data *.txt

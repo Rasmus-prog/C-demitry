@@ -1,82 +1,107 @@
 #include "sfuns.h"
-
 #include <cmath>
+#include <limits>
+#include <vector>
+#include <iostream>
 
-namespace {
 
-double norm(const std::vector<double>& v) {
-    double sum = 0.0;
-    for (double value : v) {
-        sum += value * value;
+std::vector<double> negate(const std::vector<double>& v) {
+    std::vector<double> result(v.size());
+    for (std::size_t i = 0; i < v.size(); ++i) {
+        result[i] = -v[i];
     }
-    return std::sqrt(sum);
+    return result;
 }
 
 std::vector<double> add(const std::vector<double>& a, const std::vector<double>& b) {
-    std::vector<double> out(a.size());
+    std::vector<double> result(a.size());
     for (std::size_t i = 0; i < a.size(); ++i) {
-        out[i] = a[i] + b[i];
+        result[i] = a[i] + b[i];
     }
-    return out;
+    return result;
 }
 
 std::vector<double> scale(const std::vector<double>& v, double alpha) {
-    std::vector<double> out(v.size());
+    std::vector<double> result(v.size());
     for (std::size_t i = 0; i < v.size(); ++i) {
-        out[i] = alpha * v[i];
+        result[i] = v[i] * alpha;
     }
-    return out;
+    return result;
 }
 
-std::vector<double> negate(const std::vector<double>& v) {
-    std::vector<double> out(v.size());
-    for (std::size_t i = 0; i < v.size(); ++i) {
-        out[i] = -v[i];
+std::vector<double> defaultJacobianDx(const std::vector<double>& x) {
+    constexpr double eps_sqrt = 1.0 / 67108864.0; // 2^-26
+    std::vector<double> dx(x.size(), eps_sqrt);
+    for (std::size_t i = 0; i < x.size(); ++i) {
+        const double scale = std::max(std::abs(x[i]), 1.0);
+        dx[i] = scale * eps_sqrt;
     }
-    return out;
+    return dx;
 }
 
-std::vector<double> solve_linear_system_qr(
-    const std::vector<std::vector<double>>& A,
-    const std::vector<double>& b
+std::vector<std::vector<double>> computeJacobian(
+    std::function<std::vector<double>(const std::vector<double>&)> f,
+    const std::vector<double>& x,
+    const std::vector<double>& fx,
+    const std::vector<double>& dx
 ) {
+    const std::size_t n = x.size();
+    const std::size_t m = fx.size();
+    std::vector<std::vector<double>> J(m, std::vector<double>(n));
+
+    for (std::size_t j = 0; j < n; ++j) {
+        std::vector<double> x_plus = x;
+        const double h = dx[j];
+        x_plus[j] += h;
+        const std::vector<double> fx_plus = f(x_plus);
+
+        for (std::size_t i = 0; i < m; ++i) {
+            J[i][j] = (fx_plus[i] - fx[i]) / h;
+        }
+    }
+
+    return J;
+}
+
+std::vector<double> solveLinearSystem(const std::vector<std::vector<double>>& A, const std::vector<double>& b) {
     const std::size_t m = A.size();
     if (m == 0) {
         return {};
     }
+
     const std::size_t n = A.front().size();
 
-    std::vector<std::vector<double>> Q(n, std::vector<double>(n, 0.0));
+    std::vector<std::vector<double>> Q(m, std::vector<double>(n, 0.0));
     std::vector<std::vector<double>> R(n, std::vector<double>(n, 0.0));
 
     for (std::size_t j = 0; j < n; ++j) {
-        std::vector<double> v(n);
-        for (std::size_t i = 0; i < n; ++i) {
+        std::vector<double> v(m);
+        for (std::size_t i = 0; i < m; ++i) {
             v[i] = A[i][j];
         }
 
         for (std::size_t i = 0; i < j; ++i) {
             double rij = 0.0;
-            for (std::size_t k = 0; k < n; ++k) {
+            for (std::size_t k = 0; k < m; ++k) {
                 rij += Q[k][i] * v[k];
             }
             R[i][j] = rij;
-            for (std::size_t k = 0; k < n; ++k) {
+            for (std::size_t k = 0; k < m; ++k) {
                 v[k] -= rij * Q[k][i];
             }
         }
 
         const double rjj = norm(v);
-        R[j][j] = rjj;
 
-        for (std::size_t k = 0; k < n; ++k) {
+        R[j][j] = rjj;
+        for (std::size_t k = 0; k < m; ++k) {
             Q[k][j] = v[k] / rjj;
         }
     }
 
     std::vector<double> y(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) {
-        for (std::size_t k = 0; k < n; ++k) {
+        for (std::size_t k = 0; k < m; ++k) {
             y[i] += Q[k][i] * b[k];
         }
     }
@@ -93,95 +118,116 @@ std::vector<double> solve_linear_system_qr(
     return x;
 }
 
-} // namespace
 
-std::vector<double> gradient(const Function& phi, const std::vector<double>& x) {
-    const double phi_x = phi(x);
-    std::vector<double> g(x.size());
-    std::vector<double> x_work = x;
-
-    for (std::size_t i = 0; i < x.size(); ++i) {
-        const double dxi = (1.0 + std::abs(x_work[i])) * std::pow(2.0, -26);
-        x_work[i] += dxi;
-        g[i] = (phi(x_work) - phi_x) / dxi;
-        x_work[i] = x[i];
+double norm(const std::vector<double>& v) {
+    double sum = 0.0;
+    for (double value : v) {
+        sum += value * value;
     }
-
-    return g;
+    return std::sqrt(sum);
 }
 
-std::vector<std::vector<double>> hessian(const Function& phi, const std::vector<double>& x) {
-    const std::vector<double> g_phi_x = gradient(phi, x);
-    std::vector<std::vector<double>> H(x.size(), std::vector<double>(x.size(), 0.0));
-    std::vector<double> x_work = x;
-
-    for (std::size_t j = 0; j < x.size(); ++j) {
-        const double dxj = (1.0 + std::abs(x_work[j])) * std::pow(2.0, -13);
-        x_work[j] += dxj;
-        const std::vector<double> g_shift = gradient(phi, x_work);
-        for (std::size_t i = 0; i < x.size(); ++i) {
-            H[i][j] = (g_shift[i] - g_phi_x[i]) / dxj;
-        }
-        x_work[j] = x[j];
-    }
-
-    return H;
+void printVector(const std::vector<double>& x) {
+	std::cout << '(';
+	for (std::size_t i = 0; i < x.size(); ++i) {
+		std::cout << x[i];
+		if (i + 1 != x.size()) {
+			std::cout << ", ";
+		}
+	}
+	std::cout << ')';
 }
 
-NewtonResult newton_minimize(
-    const Function& phi,
+double rosenbrock(const std::vector<double>& x) {
+	const double xx = x[0];
+	const double yy = x[1];
+	return (1.0 - xx) * (1.0 - xx) + 100.0 * (yy - xx * xx) * (yy - xx * xx);
+}
+
+double himmelblau(const std::vector<double>& x) {
+	const double xx = x[0];
+	const double yy = x[1];
+	const double a = xx * xx + yy - 11.0;
+	const double b = xx + yy * yy - 7.0;
+	return a * a + b * b;
+}
+
+void reportSolution(
+    const std::string& name,
+    const std::function<std::vector<double>(const std::vector<double>&)>& f,
+    const std::vector<double>& x0,
+    const std::vector<double>& dx
+) {
+	const std::vector<double> root = newton(f, x0, 1e-10, 1e-3, 200, dx);
+	std::cout << name << "\n  start = ";
+	printVector(x0);
+	std::cout << "\n  root  = ";
+	printVector(root);
+	std::cout << "\n  ||f(root)|| = " << norm(f(root)) << "\n\n";
+}
+
+
+std::vector<double> newton(
+    std::function<std::vector<double>(const std::vector<double>&)> f,
     const std::vector<double>& x0,
     double acc,
-    int max_steps
+    double alpha_min,
+    int max_iter,
+    const std::vector<double>& jacobian_dx
 ) {
     std::vector<double> x = x0;
-    NewtonResult result;
-
-    for (int step = 0; step < max_steps; ++step) {
-        const std::vector<double> g = gradient(phi, x);
-        if (norm(g) < acc) {
-            result.x = x;
-            result.steps = step;
-            result.converged = true;
-            return result;
+    const bool has_user_dx = !jacobian_dx.empty();
+    std::vector<double> user_dx = jacobian_dx;
+    for (double& d : user_dx) {
+        d = std::abs(d);
+        if (d == 0.0) {
+            d = 1.0 / 67108864.0;
         }
-
-        const std::vector<std::vector<double>> H = hessian(phi, x);
-        std::vector<double> dx;
-        try {
-            dx = solve_linear_system_qr(H, negate(g));
-        } catch (const std::exception&) {
-            result.x = x;
-            result.steps = step;
-            result.converged = false;
-            return result;
-        }
-
-        const double phi_x = phi(x);
-        double lambda = 1.0;
-        std::vector<double> x_trial = x;
-        bool accepted = false;
-        while (lambda >= 1.0 / 1024.0) {
-            x_trial = add(x, scale(dx, lambda));
-            if (phi(x_trial) < phi_x) {
-                accepted = true;
-                break;
-            }
-            lambda /= 2.0;
-        }
-
-        if (!accepted) {
-            result.x = x;
-            result.steps = step;
-            result.converged = false;
-            return result;
-        }
-
-        x = x_trial;
     }
 
-    result.x = x;
-    result.steps = max_steps;
-    result.converged = false;
-    return result;
+    std::vector<double> fx = f(x);
+
+    for (int iter = 0; iter < max_iter; ++iter) {
+        if (norm(fx) < acc) {
+            break;
+        }
+
+        std::vector<double> dx = has_user_dx ? user_dx : defaultJacobianDx(x);
+        for (double& d : dx) {
+            d = std::abs(d);
+            if (d == 0.0) {
+                d = 1.0 / 67108864.0;
+            }
+        }
+
+        const std::vector<std::vector<double>> J = computeJacobian(f, x, fx, dx);
+        const std::vector<double> Dx = solveLinearSystem(J, negate(fx));
+
+        double alpha = 1.0;
+        std::vector<double> z = x;
+        std::vector<double> fz = fx;
+        while (true) {
+            z = add(x, scale(Dx, alpha));
+            fz = f(z);
+            if (norm(fz) < norm(fx)) {
+                break;
+            }
+            if (alpha < alpha_min) {
+                break;
+            }
+            alpha /= 2.0;
+        }
+
+        const std::vector<double> step = scale(Dx, alpha);
+        if (norm(step) <= norm(dx)) {
+            x = z;
+            fx = fz;
+            break;
+        }
+
+        x = z;
+        fx = fz;
+    }
+
+    return x;
 }

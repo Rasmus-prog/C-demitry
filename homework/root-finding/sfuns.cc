@@ -1,18 +1,9 @@
 #include "sfuns.h"
 #include <cmath>
 #include <limits>
-#include <stdexcept>
 #include <vector>
+#include <iostream>
 
-namespace {
-
-double norm(const std::vector<double>& v) {
-    double sum = 0.0;
-    for (double value : v) {
-        sum += value * value;
-    }
-    return std::sqrt(sum);
-}
 
 std::vector<double> negate(const std::vector<double>& v) {
     std::vector<double> result(v.size());
@@ -127,7 +118,54 @@ std::vector<double> solveLinearSystem(const std::vector<std::vector<double>>& A,
     return x;
 }
 
-} // namespace
+
+double norm(const std::vector<double>& v) {
+    double sum = 0.0;
+    for (double value : v) {
+        sum += value * value;
+    }
+    return std::sqrt(sum);
+}
+
+void printVector(const std::vector<double>& x) {
+	std::cout << '(';
+	for (std::size_t i = 0; i < x.size(); ++i) {
+		std::cout << x[i];
+		if (i + 1 != x.size()) {
+			std::cout << ", ";
+		}
+	}
+	std::cout << ')';
+}
+
+double rosenbrock(const std::vector<double>& x) {
+	const double xx = x[0];
+	const double yy = x[1];
+	return (1.0 - xx) * (1.0 - xx) + 100.0 * (yy - xx * xx) * (yy - xx * xx);
+}
+
+double himmelblau(const std::vector<double>& x) {
+	const double xx = x[0];
+	const double yy = x[1];
+	const double a = xx * xx + yy - 11.0;
+	const double b = xx + yy * yy - 7.0;
+	return a * a + b * b;
+}
+
+void reportSolution(
+    const std::string& name,
+    const std::function<std::vector<double>(const std::vector<double>&)>& f,
+    const std::vector<double>& x0,
+    const std::vector<double>& dx
+) {
+	const std::vector<double> root = newton(f, x0, 1e-10, 1e-3, 200, dx);
+	std::cout << name << "\n  start = ";
+	printVector(x0);
+	std::cout << "\n  root  = ";
+	printVector(root);
+	std::cout << "\n  ||f(root)|| = " << norm(f(root)) << "\n\n";
+}
+
 
 std::vector<double> newton(
     std::function<std::vector<double>(const std::vector<double>&)> f,

@@ -1,9 +1,20 @@
 #include "sfuns.h"
 #include <cmath>
-#include <limits>
 #include <vector>
 #include <iostream>
 
+namespace {
+
+constexpr double kGradientStep = 1.0 / 67108864.0;
+constexpr double kHessianStep = 1.0 / 8192.0;
+
+std::vector<double> stepSizes(const std::vector<double>& x, double base) {
+    std::vector<double> dx(x.size(), base);
+    for (std::size_t i = 0; i < x.size(); ++i) {
+        dx[i] = (1.0 + std::abs(x[i])) * base;
+    }
+    return dx;
+}
 
 std::vector<double> negate(const std::vector<double>& v) {
     std::vector<double> result(v.size());
@@ -29,39 +40,35 @@ std::vector<double> scale(const std::vector<double>& v, double alpha) {
     return result;
 }
 
-std::vector<double> defaultJacobianDx(const std::vector<double>& x) {
-    constexpr double eps_sqrt = 1.0 / 67108864.0; // 2^-26
-    std::vector<double> dx(x.size(), eps_sqrt);
+std::vector<double> gradient(const Function& phi, const std::vector<double>& x) {
+    const double phi_x = phi(x);
+    const std::vector<double> dx = stepSizes(x, kGradientStep);
+    std::vector<double> g(x.size());
     for (std::size_t i = 0; i < x.size(); ++i) {
-        const double scale = std::max(std::abs(x[i]), 1.0);
-        dx[i] = scale * eps_sqrt;
+        std::vector<double> xp = x;
+        xp[i] += dx[i];
+        g[i] = (phi(xp) - phi_x) / dx[i];
     }
-    return dx;
+    return g;
 }
 
-std::vector<std::vector<double>> computeJacobian(
-    std::function<std::vector<double>(const std::vector<double>&)> f,
-    const std::vector<double>& x,
-    const std::vector<double>& fx,
-    const std::vector<double>& dx
-) {
-    const std::size_t n = x.size();
-    const std::size_t m = fx.size();
-    std::vector<std::vector<double>> J(m, std::vector<double>(n));
-
-    for (std::size_t j = 0; j < n; ++j) {
-        std::vector<double> x_plus = x;
-        const double h = dx[j];
-        x_plus[j] += h;
-        const std::vector<double> fx_plus = f(x_plus);
-
-        for (std::size_t i = 0; i < m; ++i) {
-            J[i][j] = (fx_plus[i] - fx[i]) / h;
+std::vector<std::vector<double>> hessian(const Function& phi, const std::vector<double>& x) {
+    const std::vector<double> g0 = gradient(phi, x);
+    const std::vector<double> dx = stepSizes(x, kHessianStep);
+    std::vector<std::vector<double>> H(x.size(), std::vector<double>(x.size()));
+    for (std::size_t j = 0; j < x.size(); ++j) {
+        std::vector<double> xp = x;
+        xp[j] += dx[j];
+        const std::vector<double> gj = gradient(phi, xp);
+        for (std::size_t i = 0; i < x.size(); ++i) {
+            H[i][j] = (gj[i] - g0[i]) / dx[j];
         }
     }
-
-    return J;
+    return H;
 }
+
+} // namespace
+
 
 std::vector<double> solveLinearSystem(const std::vector<std::vector<double>>& A, const std::vector<double>& b) {
     const std::size_t m = A.size();
@@ -154,80 +161,59 @@ double himmelblau(const std::vector<double>& x) {
 
 void reportSolution(
     const std::string& name,
-    const std::function<std::vector<double>(const std::vector<double>&)>& f,
-    const std::vector<double>& x0,
-    const std::vector<double>& dx
-) {
-	const std::vector<double> root = newton(f, x0, 1e-10, 1e-3, 200, dx);
-	std::cout << name << "\n  start = ";
-	printVector(x0);
-	std::cout << "\n  root  = ";
-	printVector(root);
-	std::cout << "\n  ||f(root)|| = " << norm(f(root)) << "\n\n";
-}
-
-
-std::vector<double> newton(
-    std::function<std::vector<double>(const std::vector<double>&)> f,
+    const Function& phi,
     const std::vector<double>& x0,
     double acc,
     double alpha_min,
-    int max_iter,
-    const std::vector<double>& jacobian_dx
+    int max_iter
+) {
+    const NewtonResult result = newton(phi, x0, acc, alpha_min, max_iter);
+	std::cout << name << "\n  start = ";
+	printVector(x0);
+    std::cout << "\n  minimum  = ";
+    printVector(result.x);
+    std::cout << "\n  f(minimum) = " << result.value;
+    std::cout << "\n  steps = " << result.steps << "\n\n";
+}
+
+
+NewtonResult newton(
+    const Function& phi,
+    const std::vector<double>& x0,
+    double acc,
+    double alpha_min,
+    int max_iter
 ) {
     std::vector<double> x = x0;
-    const bool has_user_dx = !jacobian_dx.empty();
-    std::vector<double> user_dx = jacobian_dx;
-    for (double& d : user_dx) {
-        d = std::abs(d);
-        if (d == 0.0) {
-            d = 1.0 / 67108864.0;
-        }
-    }
+    int steps = 0;
 
-    std::vector<double> fx = f(x);
-
-    for (int iter = 0; iter < max_iter; ++iter) {
-        if (norm(fx) < acc) {
+    for (; steps < max_iter; ++steps) {
+        const std::vector<double> g = gradient(phi, x);
+        if (norm(g) < acc) {
             break;
         }
 
-        std::vector<double> dx = has_user_dx ? user_dx : defaultJacobianDx(x);
-        for (double& d : dx) {
-            d = std::abs(d);
-            if (d == 0.0) {
-                d = 1.0 / 67108864.0;
-            }
-        }
-
-        const std::vector<std::vector<double>> J = computeJacobian(f, x, fx, dx);
-        const std::vector<double> Dx = solveLinearSystem(J, negate(fx));
+        const std::vector<std::vector<double>> H = hessian(phi, x);
+        const std::vector<double> step = solveLinearSystem(H, negate(g));
 
         double alpha = 1.0;
-        std::vector<double> z = x;
-        std::vector<double> fz = fx;
-        while (true) {
-            z = add(x, scale(Dx, alpha));
-            fz = f(z);
-            if (norm(fz) < norm(fx)) {
-                break;
-            }
-            if (alpha < alpha_min) {
+        std::vector<double> candidate = x;
+        double candidate_value = phi(x);
+        while (alpha >= alpha_min) {
+            candidate = add(x, scale(step, alpha));
+            candidate_value = phi(candidate);
+            if (candidate_value < phi(x)) {
                 break;
             }
             alpha /= 2.0;
         }
 
-        const std::vector<double> step = scale(Dx, alpha);
-        if (norm(step) <= norm(dx)) {
-            x = z;
-            fx = fz;
+        if (candidate_value >= phi(x)) {
             break;
         }
 
-        x = z;
-        fx = fz;
+        x = candidate;
     }
 
-    return x;
+    return {x, steps, phi(x)};
 }

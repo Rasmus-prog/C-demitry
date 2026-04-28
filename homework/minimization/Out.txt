@@ -1,0 +1,12 @@
+Rosenbrock
+  start = (-1.2, 1)
+  minimum  = (0.999872376917, 0.999743658957)
+  f(minimum) = 1.64111199864e-08
+  steps = 20
+
+Himmelblau
+  start = (3.1, 2.1)
+  minimum  = (2.99999997031, 2.00000000289)
+  f(minimum) = 3.10446728996e-14
+  steps = 3
+

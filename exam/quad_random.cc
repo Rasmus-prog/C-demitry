@@ -3,9 +3,11 @@
 #include <cmath>
 #include <limits>
 #include <random>
+// Fixed seed for testing. In production, use std::random_device{}().
+// static thread_local std::mt19937_64 rng{42};
 
-static thread_local std::mt19937_64 rng{42};
-
+std::random_device rd;
+static thread_local std::mt19937_64 rng{rd()};
 // ---------------------------------------------------------------------------
 // Core recursive function.
 //
@@ -99,11 +101,9 @@ std::pair<double,double> integrate_random(
                    std::numeric_limits<double>::quiet_NaN(), 0);
 }
 
-// ---------------------------------------------------------------------------
 // Clenshaw-Curtis wrapper.
 // Open the t-interval by eps_t on each side to avoid the Jacobian zero
 // (sin(pi*t)=0 at t=0,1) hitting a singularity of f at an endpoint.
-// ---------------------------------------------------------------------------
 std::pair<double,double> integrate_random_cc(
     const Function& f,
     double a, double b,

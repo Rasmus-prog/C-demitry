@@ -3,23 +3,14 @@
 #include <cmath>
 #include <limits>
 #include <random>
-// Fixed seed for testing. In production, use std::random_device{}().
+// Fixed seed for testing. use std::random_device{}() for random data.
 // static thread_local std::mt19937_64 rng{42};
-
 std::random_device rd;
+
 static thread_local std::mt19937_64 rng{rd()};
-// ---------------------------------------------------------------------------
+
+
 // Core recursive function.
-//
-// The key challenge for log(x)/sqrt(x) near x=0 even with CC transform:
-// the transformed integrand g(t) = f(cos(pi*t)) * sin(pi*t) * (b-a)/2*pi
-// still has large variance near t~1 (where cos(pi*t)~-1 -> x~0).
-// We address this with:
-//   1. Open interval (eps_t away from endpoints) in integrate_random_cc.
-//   2. A hard cap at depth 52 (~double precision limit).
-//   3. At the cap, we return the best estimate with a large error so the
-//      caller's error accumulation stays finite.
-// ---------------------------------------------------------------------------
 static std::pair<double,double> recurse(
     const Function& f,
     double a, double b,

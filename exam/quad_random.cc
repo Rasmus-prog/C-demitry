@@ -9,7 +9,6 @@ std::random_device rd;
 
 static thread_local std::mt19937_64 rng{rd()};
 
-
 // Core recursive function.
 static std::pair<double,double> recurse(
     const Function& f,
